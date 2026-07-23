@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CellStories Hub — Prototype</title>
+<title>CellStories Platform — Prototype</title>
 <meta name="robots" content="noindex, nofollow">
 
 <link rel="icon" type="image/svg+xml" href="./favicon.svg">
@@ -65,7 +65,8 @@
     width:232px; flex-shrink:0; background:var(--dark);
     padding:24px 16px; display:flex; flex-direction:column; gap:24px; position:sticky; top:0; height:100vh;
   }
-  .brand{ display:flex; align-items:center; gap:10px; padding:4px 8px 8px; }
+  .brand{ display:flex; align-items:center; gap:10px; padding:4px 8px 8px; transition:opacity .15s; }
+  .brand:hover{ opacity:0.8; }
   .brand .mark{ width:26px; height:26px; flex-shrink:0; }
   .brand span{ font-family:var(--display); font-weight:700; font-size:1.05rem; color:var(--white); }
 
@@ -136,19 +137,28 @@
   }
   .study-card-new:hover{ border-color:var(--sage); color:var(--sage-dim); background:var(--sage-soft); }
 
+  .table-scroll{ overflow-x:auto; }
   table{ width:100%; border-collapse:collapse; }
-  th{ text-align:left; font-family:var(--mono); font-size:0.68rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink-faint); font-weight:500; padding:0 14px 10px; border-bottom:1px solid var(--line); }
+  th{ text-align:left; font-family:var(--mono); font-size:0.68rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink-faint); font-weight:500; padding:0 14px 10px; border-bottom:1px solid var(--line); white-space:nowrap; }
   td{ padding:14px; border-bottom:1px solid var(--line); font-size:0.88rem; vertical-align:middle; }
   tr:last-child td{ border-bottom:none; }
   tbody tr{ transition:background .1s; }
   tbody tr:hover{ background:var(--bg); cursor:pointer; }
   .code-cell{ font-family:var(--mono); font-weight:600; color:var(--ink); }
+  .ptable td{ white-space:nowrap; }
 
   .status-dot{ width:9px; height:9px; border-radius:50%; display:inline-block; }
   .status-dot.on{ background:var(--sage); }
   .status-dot.off{ background:var(--grey-soft); border:1.5px solid var(--line); }
   .status-row{ display:flex; gap:10px; align-items:center; }
   .status-row .lbl{ font-size:0.68rem; color:var(--ink-faint); font-family:var(--mono); }
+
+  .completion{ display:flex; align-items:center; gap:8px; }
+  .completion-track{ width:56px; height:6px; border-radius:4px; background:var(--grey-soft); overflow:hidden; flex-shrink:0; }
+  .completion-fill{ height:100%; border-radius:4px; background:var(--azure); transition:width .2s ease; }
+  .completion-pct{ font-family:var(--mono); font-size:0.76rem; font-weight:500; color:var(--azure-dim); font-variant-numeric:tabular-nums; }
+  .completion.complete .completion-fill{ background:var(--sage); }
+  .completion.complete .completion-pct{ color:var(--sage-dim); }
 
   .table-toolbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
   .tabs{ display:flex; gap:4px; background:var(--bg); padding:4px; border-radius:10px; width:fit-content; margin-bottom:24px; }
@@ -262,7 +272,7 @@
 
 <script>
 /* =========================================================
-   CellStories Hub — clickable prototype
+   CellStories Platform — clickable prototype
    Static demo: sample data only, no real storage/AI backend.
    ========================================================= */
 
@@ -346,14 +356,14 @@ function renderSidebar(parts){
   const studyId = parts[0];
   const study = state.studies.find(s=>s.id===studyId);
   let html = `
-    <div class="brand">
+    <a class="brand" href="https://www.cellstories.bio/" target="_blank" rel="noopener">
       <svg class="mark" viewBox="0 0 24 24" fill="none">
         <circle cx="12" cy="12" r="11" stroke="#FBFBFB" stroke-width="1.1"/>
         <circle cx="9" cy="10" r="3.4" fill="#56B77E"/>
         <circle cx="15" cy="15" r="2.2" fill="#F2735B"/>
       </svg>
-      <span>CellStories Hub</span>
-    </div>
+      <span>CellStories Platform</span>
+    </a>
     <div class="proto-badge">Prototype · Sample Data</div>
     <div class="nav-group">
       <div class="nav-label">Workspace</div>
@@ -460,23 +470,37 @@ function renderParticipantsPage(study){
       <a class="tab" href="#/${study.id}/cohort">Cohort Analysis</a>
     </div>
     <div class="card">
-      <table>
+      <div class="table-scroll">
+      <table class="ptable">
         <thead><tr>
-          <th>Code</th><th>Added</th>
+          <th>Code</th><th>Completion</th><th>Added</th>
           ${DATA_TYPES.map(dt=>`<th>${dt.icon} ${dt.label}</th>`).join('')}
         </tr></thead>
         <tbody>
           ${list.map(p=>`
             <tr onclick="location.hash='#/${study.id}/participant/${p.code}'">
               <td class="code-cell">${p.code}</td>
+              <td>${completionBar(p)}</td>
               <td>${p.added}</td>
               ${DATA_TYPES.map(dt=>`<td><span class="status-dot ${p.status[dt.key]?'on':'off'}"></span></td>`).join('')}
-            </tr>`).join('') || `<tr><td colspan="${2+DATA_TYPES.length}" style="text-align:center;color:var(--ink-faint);padding:30px;">No participants yet — add the first one.</td></tr>`}
+            </tr>`).join('') || `<tr><td colspan="${3+DATA_TYPES.length}" style="text-align:center;color:var(--ink-faint);padding:30px;">No participants yet — add the first one.</td></tr>`}
         </tbody>
       </table>
+      </div>
     </div>
   `;
   document.getElementById('add-p-btn').onclick = ()=>openAddParticipantModal(study);
+}
+
+function completionBar(p){
+  const total = DATA_TYPES.length;
+  const done = Object.values(p.status).filter(Boolean).length;
+  const pct = Math.round((done/total)*100);
+  const complete = done===total;
+  return `<div class="completion ${complete?'complete':''}">
+    <div class="completion-track"><div class="completion-fill" style="width:${pct}%"></div></div>
+    <span class="completion-pct">${pct}%</span>
+  </div>`;
 }
 
 function openAddParticipantModal(study){
