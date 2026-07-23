@@ -1,11 +1,804 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cell Stories</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CellStories Hub — Prototype</title>
+<meta name="robots" content="noindex, nofollow">
+
+<link rel="icon" type="image/svg+xml" href="./favicon.svg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --dark:#17312C;
+    --white:#FBFBFB;
+    --bg:#F7F8F7;
+    --card:#FFFFFF;
+
+    --sage:#56B77E;
+    --sage-dim:#3E9863;
+    --sage-soft:#E9F6EE;
+
+    --azure:#3E9BD6;
+    --azure-dim:#2C7FB0;
+    --azure-soft:#E8F3FA;
+
+    --coral:#F2735B;
+    --coral-hover:#E05C43;
+    --coral-soft:#FDECE8;
+
+    --grey:#9AA39D;
+    --grey-soft:#EEF0EE;
+
+    --ink:#16211E;
+    --ink-dim:#54615C;
+    --ink-faint:#8A968F;
+
+    --line:#E4E8E5;
+
+    --display:'Space Grotesk', sans-serif;
+    --body:'Manrope', sans-serif;
+    --mono:'IBM Plex Mono', monospace;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html{ scroll-behavior:smooth; }
+  body{
+    font-family:var(--body);
+    background:var(--bg);
+    color:var(--ink-dim);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{ color:inherit; text-decoration:none; }
+  button{ font-family:inherit; cursor:pointer; }
+  h1,h2,h3,h4{ font-family:var(--display); color:var(--ink); font-weight:600; letter-spacing:-0.01em; }
+
+  /* ---------- Shell layout ---------- */
+  .shell{ display:flex; min-height:100vh; }
+
+  .sidebar{
+    width:232px; flex-shrink:0; background:var(--card); border-right:1px solid var(--line);
+    padding:24px 16px; display:flex; flex-direction:column; gap:24px; position:sticky; top:0; height:100vh;
+  }
+  .brand{ display:flex; align-items:center; gap:10px; padding:4px 8px 8px; }
+  .brand .mark{ width:28px; height:28px; border-radius:8px; background:linear-gradient(135deg, var(--sage), var(--azure)); flex-shrink:0; }
+  .brand span{ font-family:var(--display); font-weight:700; font-size:1.05rem; color:var(--ink); }
+
+  .proto-badge{
+    font-family:var(--mono); font-size:0.68rem; letter-spacing:0.04em; text-transform:uppercase;
+    color:var(--coral-hover); background:var(--coral-soft); border:1px solid #F6CFC4;
+    padding:4px 8px; border-radius:6px; display:inline-block; width:fit-content; margin:0 8px;
+  }
+
+  .nav-group{ display:flex; flex-direction:column; gap:2px; }
+  .nav-label{ font-family:var(--mono); font-size:0.68rem; text-transform:uppercase; letter-spacing:0.07em; color:var(--ink-faint); padding:0 10px; margin-bottom:6px; }
+  .nav-link{
+    display:flex; align-items:center; gap:10px; padding:9px 10px; border-radius:8px;
+    font-size:0.9rem; color:var(--ink-dim); font-weight:500;
+  }
+  .nav-link:hover{ background:var(--bg); color:var(--ink); }
+  .nav-link.active{ background:var(--sage-soft); color:var(--sage-dim); font-weight:600; }
+  .nav-link .dot{ width:6px; height:6px; border-radius:50%; background:currentColor; opacity:0.5; flex-shrink:0; }
+
+  .main{ flex:1; min-width:0; }
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between; padding:18px 40px;
+    border-bottom:1px solid var(--line); background:var(--card);
+  }
+  .breadcrumb{ font-size:0.86rem; color:var(--ink-faint); display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .breadcrumb a:hover{ color:var(--ink); }
+  .breadcrumb .sep{ color:var(--line); }
+  .breadcrumb .current{ color:var(--ink); font-weight:600; }
+
+  .content{ padding:36px 40px 80px; max-width:1180px; }
+
+  /* ---------- Buttons ---------- */
+  .btn{
+    display:inline-flex; align-items:center; gap:8px; font-size:0.88rem; font-weight:600;
+    padding:10px 18px; border-radius:9px; border:1px solid transparent; transition:all .15s ease;
+  }
+  .btn-primary{ background:var(--coral); color:#fff; }
+  .btn-primary:hover{ background:var(--coral-hover); }
+  .btn-secondary{ background:var(--card); color:var(--ink); border-color:var(--line); }
+  .btn-secondary:hover{ border-color:var(--ink-faint); }
+  .btn-ghost{ color:var(--ink-dim); }
+  .btn-ghost:hover{ color:var(--ink); }
+  .btn-sm{ padding:7px 12px; font-size:0.8rem; }
+  .btn:disabled{ opacity:0.5; cursor:not-allowed; }
+
+  /* ---------- Page header ---------- */
+  .page-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:24px; margin-bottom:28px; flex-wrap:wrap; }
+  .page-head h1{ font-size:1.6rem; margin-bottom:6px; }
+  .page-head p{ color:var(--ink-faint); font-size:0.92rem; max-width:56ch; }
+  .eyebrow{ font-family:var(--mono); font-size:0.72rem; text-transform:uppercase; letter-spacing:0.07em; color:var(--sage-dim); margin-bottom:8px; display:block; }
+
+  /* ---------- Cards / table ---------- */
+  .card{ background:var(--card); border:1px solid var(--line); border-radius:14px; }
+  .card-pad{ padding:24px 26px; }
+
+  .study-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:16px; }
+  .study-card{ padding:22px; display:flex; flex-direction:column; gap:14px; transition:border-color .15s; }
+  .study-card:hover{ border-color:var(--sage); }
+  .study-card .prefix-chip{
+    font-family:var(--mono); font-size:0.72rem; font-weight:500; color:var(--azure-dim);
+    background:var(--azure-soft); padding:3px 9px; border-radius:6px; width:fit-content;
+  }
+  .study-card h3{ font-size:1.1rem; }
+  .study-card .meta{ font-size:0.82rem; color:var(--ink-faint); display:flex; gap:14px; }
+  .study-card-new{
+    display:flex; align-items:center; justify-content:center; flex-direction:column; gap:8px;
+    border:1.5px dashed var(--line); color:var(--ink-faint); font-weight:600; font-size:0.9rem; min-height:120px;
+  }
+  .study-card-new:hover{ border-color:var(--sage); color:var(--sage-dim); background:var(--sage-soft); }
+
+  table{ width:100%; border-collapse:collapse; }
+  th{ text-align:left; font-family:var(--mono); font-size:0.68rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink-faint); font-weight:500; padding:0 14px 10px; border-bottom:1px solid var(--line); }
+  td{ padding:14px; border-bottom:1px solid var(--line); font-size:0.88rem; vertical-align:middle; }
+  tr:last-child td{ border-bottom:none; }
+  tbody tr{ transition:background .1s; }
+  tbody tr:hover{ background:var(--bg); cursor:pointer; }
+  .code-cell{ font-family:var(--mono); font-weight:600; color:var(--ink); }
+
+  .status-dot{ width:9px; height:9px; border-radius:50%; display:inline-block; }
+  .status-dot.on{ background:var(--sage); }
+  .status-dot.off{ background:var(--grey-soft); border:1.5px solid var(--line); }
+  .status-row{ display:flex; gap:10px; align-items:center; }
+  .status-row .lbl{ font-size:0.68rem; color:var(--ink-faint); font-family:var(--mono); }
+
+  .table-toolbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+  .tabs{ display:flex; gap:4px; background:var(--bg); padding:4px; border-radius:10px; width:fit-content; margin-bottom:24px; }
+  .tab{ padding:8px 16px; border-radius:8px; font-size:0.86rem; font-weight:600; color:var(--ink-faint); }
+  .tab.active{ background:var(--card); color:var(--ink); box-shadow:0 1px 2px rgba(20,30,25,0.06); }
+
+  /* ---------- Participant detail ---------- */
+  .pid-header{ display:flex; align-items:center; gap:16px; margin-bottom:8px; flex-wrap:wrap; }
+  .pid-code{ font-family:var(--mono); font-size:1.5rem; font-weight:600; color:var(--ink); }
+  .pid-sub{ color:var(--ink-faint); font-size:0.86rem; margin-bottom:28px; }
+
+  .data-cards{ display:flex; flex-direction:column; gap:16px; }
+  .data-card{ border:1px solid var(--line); border-radius:14px; background:var(--card); overflow:hidden; }
+  .data-card-head{ display:flex; align-items:center; justify-content:space-between; padding:18px 22px; gap:16px; flex-wrap:wrap; }
+  .data-card-head .left{ display:flex; align-items:center; gap:12px; }
+  .data-icon{ width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:1.1rem; }
+  .data-card-head h3{ font-size:1rem; margin-bottom:2px; }
+  .data-card-head .sub{ font-size:0.78rem; color:var(--ink-faint); }
+  .pill{ font-family:var(--mono); font-size:0.7rem; padding:4px 10px; border-radius:20px; font-weight:500; }
+  .pill.done{ background:var(--sage-soft); color:var(--sage-dim); }
+  .pill.empty{ background:var(--grey-soft); color:var(--ink-faint); }
+  .data-card-body{ border-top:1px solid var(--line); padding:22px; background:var(--bg); }
+  .file-line{ font-size:0.8rem; color:var(--ink-faint); margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+  .file-line svg{ flex-shrink:0; }
+
+  .flag{ font-size:0.72rem; font-weight:600; padding:2px 8px; border-radius:6px; font-family:var(--mono); }
+  .flag.normal{ background:var(--sage-soft); color:var(--sage-dim); }
+  .flag.high{ background:var(--coral-soft); color:var(--coral-hover); }
+  .flag.low{ background:var(--azure-soft); color:var(--azure-dim); }
+
+  .mini-table td, .mini-table th{ padding:9px 12px; font-size:0.82rem; }
+  .mini-table{ background:var(--card); border-radius:10px; overflow:hidden; border:1px solid var(--line); }
+
+  .kv-grid{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .kv{ background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px 16px; }
+  .kv .k{ font-family:var(--mono); font-size:0.68rem; text-transform:uppercase; color:var(--ink-faint); letter-spacing:0.04em; margin-bottom:6px; display:block; }
+  .kv .v{ font-size:0.88rem; color:var(--ink); font-weight:500; }
+  .tag{ display:inline-block; background:var(--azure-soft); color:var(--azure-dim); font-size:0.76rem; padding:3px 9px; border-radius:6px; margin:2px 4px 2px 0; }
+
+  .chart-box{ background:var(--card); border:1px solid var(--line); border-radius:10px; padding:18px; margin-bottom:14px; }
+  .chart-box h4{ font-size:0.82rem; margin-bottom:12px; color:var(--ink-dim); font-family:var(--body); font-weight:700; }
+
+  .organoid-sub{ margin-bottom:20px; }
+  .organoid-sub h4{ font-size:0.8rem; text-transform:uppercase; letter-spacing:0.04em; font-family:var(--mono); color:var(--ink-faint); margin-bottom:10px; font-weight:500; }
+  .img-gallery{ display:grid; grid-template-columns:repeat(auto-fill, minmax(140px,1fr)); gap:10px; }
+  .img-tile{ aspect-ratio:1; border-radius:10px; display:flex; align-items:end; padding:8px; font-size:0.68rem; color:#fff; font-weight:600; background-size:cover; }
+  .bar-cell{ position:relative; height:18px; background:var(--grey-soft); border-radius:4px; overflow:hidden; width:100px; }
+  .bar-fill{ position:absolute; left:0; top:0; bottom:0; border-radius:4px; }
+
+  .empty-state{ text-align:center; padding:22px 10px; }
+  .empty-state p{ font-size:0.84rem; color:var(--ink-faint); margin-bottom:14px; }
+
+  /* ---------- Cohort analysis ---------- */
+  .cohort-layout{ display:grid; grid-template-columns:1.3fr 1fr; gap:24px; align-items:start; }
+  @media (max-width:900px){ .cohort-layout{ grid-template-columns:1fr; } }
+  .cluster-svg-wrap{ padding:10px; }
+  .legend{ display:flex; gap:18px; flex-wrap:wrap; padding:14px 26px 4px; font-size:0.8rem; color:var(--ink-dim); }
+  .legend .item{ display:flex; align-items:center; gap:7px; }
+  .legend .sw{ width:10px; height:10px; border-radius:50%; }
+
+  .group-card{ border:1px solid var(--line); border-radius:12px; padding:16px 18px; margin-bottom:12px; cursor:pointer; transition:all .15s; background:var(--card); }
+  .group-card:hover{ border-color:var(--ink-faint); }
+  .group-card.selected{ border-color:currentColor; box-shadow:0 0 0 1px currentColor; }
+  .group-card .gtitle{ display:flex; align-items:center; gap:9px; margin-bottom:8px; }
+  .group-card .sw{ width:11px; height:11px; border-radius:50%; flex-shrink:0; }
+  .group-card h4{ font-size:0.92rem; font-family:var(--display); color:var(--ink); }
+  .group-card .n{ font-size:0.76rem; color:var(--ink-faint); font-family:var(--mono); margin-left:auto; }
+  .group-card p{ font-size:0.84rem; color:var(--ink-dim); }
+  .group-card .codes{ margin-top:10px; display:flex; flex-wrap:wrap; gap:5px; }
+  .group-card .codes span{ font-family:var(--mono); font-size:0.68rem; background:var(--bg); border:1px solid var(--line); padding:2px 6px; border-radius:5px; color:var(--ink-faint); }
+
+  .run-panel{ text-align:center; padding:60px 30px; }
+  .run-panel .spinner{ width:28px; height:28px; border-radius:50%; border:3px solid var(--line); border-top-color:var(--sage); margin:0 auto 18px; animation:spin 0.8s linear infinite; }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  /* ---------- Modal ---------- */
+  .overlay{ position:fixed; inset:0; background:rgba(22,33,30,0.4); display:flex; align-items:center; justify-content:center; z-index:50; padding:20px; }
+  .modal{ background:var(--card); border-radius:16px; padding:28px; width:100%; max-width:400px; box-shadow:0 20px 60px rgba(0,0,0,0.2); }
+  .modal h3{ font-size:1.1rem; margin-bottom:18px; }
+  .modal label{ display:block; font-family:var(--mono); font-size:0.7rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink-faint); margin-bottom:6px; }
+  .modal input{
+    width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:8px; font-size:0.9rem;
+    font-family:var(--body); color:var(--ink); margin-bottom:16px; background:var(--bg);
+  }
+  .modal input:focus{ outline:none; border-color:var(--sage); }
+  .modal .actions{ display:flex; justify-content:flex-end; gap:10px; margin-top:6px; }
+  .code-preview{ font-family:var(--mono); background:var(--sage-soft); color:var(--sage-dim); padding:10px 12px; border-radius:8px; font-size:0.86rem; margin-bottom:16px; }
+
+  .toast{
+    position:fixed; bottom:26px; left:50%; transform:translateX(-50%); background:var(--ink); color:#fff;
+    padding:12px 20px; border-radius:10px; font-size:0.86rem; box-shadow:0 10px 30px rgba(0,0,0,0.25);
+    opacity:0; pointer-events:none; transition:opacity .2s, transform .2s; z-index:100;
+  }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(-6px); }
+</style>
 </head>
 <body>
-  <h1>Hello Friend</h1>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar">
+      <div class="breadcrumb" id="breadcrumb"></div>
+    </div>
+    <div class="content" id="app"></div>
+  </div>
+</div>
+
+<div id="modal-root"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================
+   CellStories Hub — clickable prototype
+   Static demo: sample data only, no real storage/AI backend.
+   ========================================================= */
+
+const DATA_TYPES = [
+  { key:'blood',     label:'Blood Markers',            icon:'🩸', color:'coral' },
+  { key:'history',   label:'Medical History',          icon:'📋', color:'azure' },
+  { key:'genetics',  label:'Genetic / Sequencing',     icon:'🧬', color:'sage'  },
+  { key:'wearables', label:'Wearables & Symptoms',     icon:'⌚', color:'azure' },
+  { key:'organoid',  label:'Organoid Experiments',     icon:'🧫', color:'sage'  },
+];
+
+function seedRandom(seed){
+  return function(){ seed = (seed*1103515245+12345) & 0x7fffffff; return seed/0x7fffffff; };
+}
+
+function seedState(){
+  const rnd = seedRandom(42);
+  function makeParticipants(prefix, count, addedBase){
+    const arr = [];
+    for(let i=1;i<=count;i++){
+      const code = prefix+'-'+String(i).padStart(5,'0');
+      const status = {};
+      DATA_TYPES.forEach(dt=>{ status[dt.key] = rnd() > 0.28; });
+      const d = new Date(addedBase); d.setDate(d.getDate() - Math.floor(rnd()*60));
+      arr.push({ code, added: d.toISOString().slice(0,10), status, files:{} });
+    }
+    return arr;
+  }
+  return {
+    studies:[
+      { id:'cs-internal', name:'CellStories Internal Validation', prefix:'CS', desc:'Our own validation cohort, used to test the platform end-to-end before onboarding external sites.' },
+      { id:'mgh-pilot', name:'Mass General — Metabolic Pilot', prefix:'MGH', desc:'External pilot study with a hospital research team focused on metabolic disease subtyping.' },
+    ],
+    participants:{
+      'cs-internal': makeParticipants('CS', 18, '2026-07-20'),
+      'mgh-pilot': makeParticipants('MGH', 11, '2026-07-18'),
+    },
+    cohortRun:{}
+  };
+}
+
+const STORE_KEY = 'cshub_prototype_v1';
+let state;
+try{
+  const raw = localStorage.getItem(STORE_KEY);
+  state = raw ? JSON.parse(raw) : seedState();
+}catch(e){ state = seedState(); }
+function persist(){ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }
+
+function toast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(()=>el.classList.remove('show'), 2200);
+}
+
+/* ---------------- Router ---------------- */
+function parseHash(){
+  const h = location.hash.replace(/^#\/?/,'');
+  const parts = h.split('/').filter(Boolean);
+  return parts;
+}
+window.addEventListener('hashchange', render);
+window.addEventListener('DOMContentLoaded', render);
+
+function render(){
+  const parts = parseHash();
+  renderSidebar(parts);
+  if(parts.length===0){ return renderStudiesPage(); }
+  const studyId = parts[0];
+  const study = state.studies.find(s=>s.id===studyId);
+  if(!study){ location.hash=''; return; }
+  if(parts[1]==='cohort'){ return renderCohortPage(study); }
+  if(parts[1]==='participant' && parts[2]){ return renderParticipantPage(study, parts[2]); }
+  return renderParticipantsPage(study);
+}
+
+/* ---------------- Sidebar ---------------- */
+function renderSidebar(parts){
+  const studyId = parts[0];
+  const study = state.studies.find(s=>s.id===studyId);
+  let html = `
+    <div class="brand"><div class="mark"></div><span>CellStories Hub</span></div>
+    <div class="proto-badge">Prototype · Sample Data</div>
+    <div class="nav-group">
+      <div class="nav-label">Workspace</div>
+      <a class="nav-link ${!studyId?'active':''}" href="#/"><span class="dot"></span>All Studies</a>
+    </div>`;
+  if(study){
+    html += `
+    <div class="nav-group">
+      <div class="nav-label">${escapeHtml(study.name)}</div>
+      <a class="nav-link ${(!parts[1])?'active':''}" href="#/${study.id}"><span class="dot"></span>Participants</a>
+      <a class="nav-link ${parts[1]==='cohort'?'active':''}" href="#/${study.id}/cohort"><span class="dot"></span>Cohort Analysis</a>
+    </div>`;
+  }
+  document.getElementById('sidebar').innerHTML = html;
+}
+
+function renderBreadcrumb(items){
+  document.getElementById('breadcrumb').innerHTML = items.map((it,i)=>{
+    const last = i===items.length-1;
+    return (i>0?'<span class="sep">/</span>':'') + (last ? `<span class="current">${escapeHtml(it.label)}</span>` : `<a href="${it.href}">${escapeHtml(it.label)}</a>`);
+  }).join('');
+}
+
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* ---------------- Studies Page ---------------- */
+function renderStudiesPage(){
+  renderBreadcrumb([{label:'All Studies', href:'#/'}]);
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <div class="page-head">
+      <div>
+        <span class="eyebrow">Workspace</span>
+        <h1>Studies</h1>
+        <p>Each study keeps its own participants and its own patient-code numbering.</p>
+      </div>
+      <button class="btn btn-primary" id="new-study-btn">+ New Study</button>
+    </div>
+    <div class="study-grid">
+      ${state.studies.map(s=>{
+        const n = (state.participants[s.id]||[]).length;
+        return `<a href="#/${s.id}" class="card study-card">
+          <span class="prefix-chip">${escapeHtml(s.prefix)}-#####</span>
+          <h3>${escapeHtml(s.name)}</h3>
+          <div class="meta"><span>${n} participant${n===1?'':'s'}</span></div>
+        </a>`;
+      }).join('')}
+      <div class="study-card-new" id="new-study-btn-2">+ New Study</div>
+    </div>
+  `;
+  document.getElementById('new-study-btn').onclick = openNewStudyModal;
+  document.getElementById('new-study-btn-2').onclick = openNewStudyModal;
+}
+
+function openNewStudyModal(){
+  const root = document.getElementById('modal-root');
+  root.innerHTML = `
+    <div class="overlay" id="overlay">
+      <div class="modal">
+        <h3>New Study</h3>
+        <label>Study name</label>
+        <input id="m-name" placeholder="e.g. Mount Sinai — Endocrine Study" />
+        <label>Code prefix</label>
+        <input id="m-prefix" placeholder="e.g. MSH" maxlength="6" style="text-transform:uppercase" />
+        <div class="actions">
+          <button class="btn btn-ghost" id="m-cancel">Cancel</button>
+          <button class="btn btn-primary" id="m-create">Create Study</button>
+        </div>
+      </div>
+    </div>`;
+  document.getElementById('overlay').onclick = e=>{ if(e.target.id==='overlay') closeModal(); };
+  document.getElementById('m-cancel').onclick = closeModal;
+  document.getElementById('m-create').onclick = ()=>{
+    const name = document.getElementById('m-name').value.trim();
+    let prefix = document.getElementById('m-prefix').value.trim().toUpperCase().replace(/[^A-Z0-9]/g,'');
+    if(!name || !prefix){ toast('Please fill in both fields'); return; }
+    const id = prefix.toLowerCase()+'-'+Date.now().toString(36).slice(-4);
+    state.studies.push({ id, name, prefix, desc:'' });
+    state.participants[id] = [];
+    persist();
+    closeModal();
+    location.hash = '#/'+id;
+    toast('Study created');
+  };
+}
+function closeModal(){ document.getElementById('modal-root').innerHTML=''; }
+
+/* ---------------- Participants Page ---------------- */
+function renderParticipantsPage(study){
+  renderBreadcrumb([{label:'All Studies',href:'#/'},{label:study.name,href:'#/'+study.id}]);
+  const app = document.getElementById('app');
+  const list = state.participants[study.id] || [];
+  app.innerHTML = `
+    <div class="page-head">
+      <div>
+        <span class="eyebrow">${escapeHtml(study.prefix)} · Study</span>
+        <h1>${escapeHtml(study.name)}</h1>
+        <p>${escapeHtml(study.desc||'')}</p>
+      </div>
+      <button class="btn btn-primary" id="add-p-btn">+ Add Participant</button>
+    </div>
+    <div class="tabs">
+      <a class="tab active" href="#/${study.id}">Participants</a>
+      <a class="tab" href="#/${study.id}/cohort">Cohort Analysis</a>
+    </div>
+    <div class="card">
+      <table>
+        <thead><tr>
+          <th>Code</th><th>Added</th>
+          ${DATA_TYPES.map(dt=>`<th>${dt.icon} ${dt.label}</th>`).join('')}
+        </tr></thead>
+        <tbody>
+          ${list.map(p=>`
+            <tr onclick="location.hash='#/${study.id}/participant/${p.code}'">
+              <td class="code-cell">${p.code}</td>
+              <td>${p.added}</td>
+              ${DATA_TYPES.map(dt=>`<td><span class="status-dot ${p.status[dt.key]?'on':'off'}"></span></td>`).join('')}
+            </tr>`).join('') || `<tr><td colspan="${2+DATA_TYPES.length}" style="text-align:center;color:var(--ink-faint);padding:30px;">No participants yet — add the first one.</td></tr>`}
+        </tbody>
+      </table>
+    </div>
+  `;
+  document.getElementById('add-p-btn').onclick = ()=>openAddParticipantModal(study);
+}
+
+function openAddParticipantModal(study){
+  const list = state.participants[study.id] || [];
+  const nextNum = list.length + 1;
+  const nextCode = study.prefix+'-'+String(nextNum).padStart(5,'0');
+  const root = document.getElementById('modal-root');
+  root.innerHTML = `
+    <div class="overlay" id="overlay">
+      <div class="modal">
+        <h3>Add Participant</h3>
+        <div class="code-preview">Assigned code: <strong>${nextCode}</strong></div>
+        <label>Internal reference (optional)</label>
+        <input id="m-ref" placeholder="e.g. site enrollment ID" />
+        <div class="actions">
+          <button class="btn btn-ghost" id="m-cancel">Cancel</button>
+          <button class="btn btn-primary" id="m-create">Add Participant</button>
+        </div>
+      </div>
+    </div>`;
+  document.getElementById('overlay').onclick = e=>{ if(e.target.id==='overlay') closeModal(); };
+  document.getElementById('m-cancel').onclick = closeModal;
+  document.getElementById('m-create').onclick = ()=>{
+    const status = {}; DATA_TYPES.forEach(dt=>status[dt.key]=false);
+    state.participants[study.id].push({ code: nextCode, added: new Date().toISOString().slice(0,10), status, files:{} });
+    persist();
+    closeModal();
+    toast(nextCode+' added');
+    renderParticipantsPage(study);
+  };
+}
+
+/* ---------------- Participant Detail Page ---------------- */
+function renderParticipantPage(study, code){
+  const list = state.participants[study.id] || [];
+  const p = list.find(x=>x.code===code);
+  if(!p){ location.hash = '#/'+study.id; return; }
+  renderBreadcrumb([{label:'All Studies',href:'#/'},{label:study.name,href:'#/'+study.id},{label:code,href:'#'}]);
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <div class="pid-header">
+      <div class="pid-code">${p.code}</div>
+      <span class="pill ${Object.values(p.status).every(Boolean)?'done':'empty'}">${Object.values(p.status).filter(Boolean).length}/${DATA_TYPES.length} data types uploaded</span>
+    </div>
+    <div class="pid-sub">Added ${p.added} · ${escapeHtml(study.name)}</div>
+    <div class="data-cards" id="data-cards"></div>
+  `;
+  renderDataCards(study, p);
+}
+
+function renderDataCards(study, p){
+  const wrap = document.getElementById('data-cards');
+  wrap.innerHTML = DATA_TYPES.map(dt=>{
+    const uploaded = p.status[dt.key];
+    return `
+    <div class="data-card">
+      <div class="data-card-head">
+        <div class="left">
+          <div class="data-icon" style="background:var(--${dt.color}-soft)">${dt.icon}</div>
+          <div>
+            <h3>${dt.label}</h3>
+            <div class="sub">${dataTypeSub(dt.key)}</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="pill ${uploaded?'done':'empty'}">${uploaded?'Uploaded':'Not uploaded'}</span>
+          <button class="btn btn-secondary btn-sm" data-upload="${dt.key}">${uploaded?'Replace file':'Upload file'}</button>
+          <input type="file" id="file-${dt.key}" style="display:none" />
+        </div>
+      </div>
+      ${uploaded ? `<div class="data-card-body">${renderDataBody(dt.key, p)}</div>` : ''}
+    </div>`;
+  }).join('');
+
+  DATA_TYPES.forEach(dt=>{
+    const btn = wrap.querySelector(`[data-upload="${dt.key}"]`);
+    const input = wrap.querySelector(`#file-${dt.key}`);
+    btn.onclick = ()=> input.click();
+    input.onchange = ()=>{
+      const fname = input.files[0] ? input.files[0].name : 'sample-upload.csv';
+      p.status[dt.key] = true;
+      p.files[dt.key] = fname;
+      persist();
+      toast(dt.label+' uploaded');
+      renderDataCards(study, p);
+      // refresh header pill count
+      renderParticipantPage(study, p.code);
+    };
+  });
+}
+
+function dataTypeSub(key){
+  return {
+    blood:'One-time extended blood panel',
+    history:'Imported from participant questionnaire app',
+    genetics:'Sequencing lab results',
+    wearables:'90-day wearable + symptom log export',
+    organoid:'Imaging, RNA-seq & PCR results',
+  }[key];
+}
+
+function renderDataBody(key, p){
+  const fname = p.files[key] || (p.code.replace('-','').toLowerCase()+'_'+key+'.csv');
+  const fileLine = `<div class="file-line">📄 ${escapeHtml(fname)} <span style="color:var(--sage-dim)">✓ processed</span></div>`;
+
+  if(key==='blood'){
+    const rows = [
+      ['Glucose (fasting)','92','mg/dL','70–99','normal'],
+      ['HbA1c','5.4','%','<5.7','normal'],
+      ['Total Cholesterol','214','mg/dL','<200','high'],
+      ['LDL','138','mg/dL','<100','high'],
+      ['HDL','52','mg/dL','>40','normal'],
+      ['Triglycerides','98','mg/dL','<150','normal'],
+      ['hs-CRP','4.1','mg/L','<3.0','high'],
+      ['TSH','2.1','mIU/L','0.4–4.0','normal'],
+      ['Ferritin','18','ng/mL','20–250','low'],
+      ['Vitamin D','24','ng/mL','30–100','low'],
+    ];
+    return fileLine + `<table class="mini-table">
+      <thead><tr><th>Marker</th><th>Value</th><th>Unit</th><th>Reference</th><th>Flag</th></tr></thead>
+      <tbody>${rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td><span class="flag ${r[4]}">${r[4]}</span></td></tr>`).join('')}</tbody>
+    </table>`;
+  }
+
+  if(key==='history'){
+    return fileLine + `<div class="kv-grid">
+      <div class="kv"><span class="k">Family History</span><div class="v"><span class="tag">Type 2 Diabetes (mother)</span><span class="tag">Hypertension (father)</span></div></div>
+      <div class="kv"><span class="k">Prior Diagnoses</span><div class="v"><span class="tag">PCOS</span><span class="tag">Migraine</span></div></div>
+      <div class="kv"><span class="k">Current Medications</span><div class="v"><span class="tag">Metformin 500mg</span></div></div>
+      <div class="kv"><span class="k">BMI</span><div class="v">27.4</div></div>
+    </div>`;
+  }
+
+  if(key==='genetics'){
+    const rows = [
+      ['TCF7L2','rs7903146 (C/T)','Risk allele — Type 2 Diabetes'],
+      ['PPARG','Pro12Ala','Risk allele — insulin resistance'],
+      ['BRCA2','c.5946delT','Variant of uncertain significance'],
+    ];
+    return fileLine + `<table class="mini-table">
+      <thead><tr><th>Gene</th><th>Variant</th><th>Classification</th></tr></thead>
+      <tbody>${rows.map(r=>`<tr><td><strong>${r[0]}</strong></td><td style="font-family:var(--mono);font-size:0.78rem">${r[1]}</td><td>${r[2]}</td></tr>`).join('')}</tbody>
+    </table>`;
+  }
+
+  if(key==='wearables'){
+    return fileLine + `
+    <div class="chart-box"><h4>Resting Heart Rate — 90 days</h4>${sparkline([64,66,65,68,70,69,72,74,73,75,78,76,74,72,70],'var(--azure)')}</div>
+    <div class="chart-box"><h4>Continuous Glucose (avg/day) — 90 days</h4>${sparkline([98,101,99,104,110,108,112,115,111,108,105,102,100,99,97],'var(--coral)')}</div>
+    <div class="chart-box"><h4>Reported Symptoms</h4>
+      <table class="mini-table"><thead><tr><th>Date</th><th>Symptom</th><th>Severity</th></tr></thead>
+      <tbody>
+        <tr><td>Day 12</td><td>Fatigue</td><td><span class="flag high">moderate</span></td></tr>
+        <tr><td>Day 34</td><td>Headache</td><td><span class="flag normal">mild</span></td></tr>
+        <tr><td>Day 61</td><td>Fatigue</td><td><span class="flag high">moderate</span></td></tr>
+      </tbody></table>
+    </div>`;
+  }
+
+  if(key==='organoid'){
+    return fileLine + `
+    <div class="organoid-sub">
+      <h4>Imaging</h4>
+      <div class="img-gallery">
+        <div class="img-tile" style="background:linear-gradient(160deg,#3E9BD6,#17312C)">Day 3 · Brightfield</div>
+        <div class="img-tile" style="background:linear-gradient(160deg,#56B77E,#17312C)">Day 7 · Live/Dead</div>
+        <div class="img-tile" style="background:linear-gradient(160deg,#F2735B,#17312C)">Day 7 · Treatment X</div>
+        <div class="img-tile" style="background:linear-gradient(160deg,#9AA39D,#17312C)">Day 7 · Control</div>
+      </div>
+    </div>
+    <div class="organoid-sub">
+      <h4>RNA Sequencing — top differential genes</h4>
+      <table class="mini-table"><thead><tr><th>Gene</th><th>Fold Change</th><th></th></tr></thead>
+      <tbody>
+        ${[['INS',3.2],['GLP1R',2.6],['IL6',-2.1],['TNF',-1.8]].map(g=>`
+        <tr><td>${g[0]}</td><td>${g[1]>0?'+':''}${g[1]}×</td><td><div class="bar-cell"><div class="bar-fill" style="width:${Math.min(Math.abs(g[1])*20,100)}%;background:${g[1]>0?'var(--sage)':'var(--coral)'}"></div></div></td></tr>`).join('')}
+      </tbody></table>
+    </div>
+    <div class="organoid-sub">
+      <h4>PCR — Treatment X response</h4>
+      <table class="mini-table"><thead><tr><th>Target</th><th>Ct Value</th><th>vs. Control</th></tr></thead>
+      <tbody>
+        <tr><td>GLP1R</td><td>21.4</td><td><span class="flag normal">responsive</span></td></tr>
+        <tr><td>Apoptosis marker</td><td>18.9</td><td><span class="flag high">elevated</span></td></tr>
+      </tbody></table>
+    </div>`;
+  }
+  return '';
+}
+
+function sparkline(values, color){
+  const w=560,h=80,pad=6;
+  const max=Math.max(...values), min=Math.min(...values);
+  const pts = values.map((v,i)=>{
+    const x = pad + (i/(values.length-1))*(w-2*pad);
+    const y = h-pad - ((v-min)/(max-min||1))*(h-2*pad);
+    return x+','+y;
+  }).join(' ');
+  return `<svg width="100%" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" style="display:block">
+    <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`;
+}
+
+/* ---------------- Cohort Analysis Page ---------------- */
+const GROUPS = [
+  { id:'a', color:'sage',  n:14, title:'Metabolic-risk subtype',
+    desc:'Family history of Type 2 Diabetes, TCF7L2/PPARG risk variants. Organoids show strong response to Treatment X (GLP‑1 analog).' },
+  { id:'b', color:'azure', n:11, title:'Inflammatory subtype',
+    desc:'Elevated hs-CRP and reduced heart-rate variability on wearable data. Organoids show inflammatory pathway activation, partial response to Treatment Y.' },
+  { id:'c', color:'coral', n:9,  title:'Low-response subtype',
+    desc:'BRCA-adjacent variant carriers with an otherwise normal blood panel. Organoids show minimal response across the drug panel — candidates for combination therapy.' },
+  { id:'u', color:'grey',  n:8,  title:'Unclassified',
+    desc:'Not enough uploaded data yet to confidently assign a subtype. Awaiting additional blood/genetic/wearable uploads.' },
+];
+
+function buildClusterDots(){
+  const rnd = seedRandom(7);
+  const centers = { a:[150,150], b:[380,120], c:[300,260], u:[470,250] };
+  const dots = [];
+  GROUPS.forEach(g=>{
+    for(let i=0;i<g.n;i++){
+      const [cx,cy] = centers[g.id];
+      const ang = rnd()*Math.PI*2, rad = rnd()*46;
+      dots.push({ group:g.id, x:cx+Math.cos(ang)*rad, y:cy+Math.sin(ang)*rad });
+    }
+  });
+  return dots;
+}
+const CLUSTER_DOTS = buildClusterDots();
+
+function renderCohortPage(study){
+  renderBreadcrumb([{label:'All Studies',href:'#/'},{label:study.name,href:'#/'+study.id},{label:'Cohort Analysis',href:'#'}]);
+  const app = document.getElementById('app');
+  const hasRun = !!state.cohortRun[study.id];
+  const list = state.participants[study.id]||[];
+
+  app.innerHTML = `
+    <div class="page-head">
+      <div>
+        <span class="eyebrow">${escapeHtml(study.prefix)} · Cohort</span>
+        <h1>Cohort Analysis</h1>
+        <p>Looks across every participant's blood, history, genetic, wearable and organoid data to surface shared patterns and candidate disease subtypes.</p>
+      </div>
+      ${hasRun ? `<button class="btn btn-secondary" id="rerun-btn">Re-run Analysis</button>` : ''}
+    </div>
+    <div class="tabs">
+      <a class="tab" href="#/${study.id}">Participants</a>
+      <a class="tab active" href="#/${study.id}/cohort">Cohort Analysis</a>
+    </div>
+    <div id="cohort-body"></div>
+  `;
+
+  const body = document.getElementById('cohort-body');
+
+  if(!hasRun){
+    body.innerHTML = `
+      <div class="card run-panel">
+        <h3 style="margin-bottom:8px;">Ready to analyze ${list.length} participants</h3>
+        <p style="color:var(--ink-faint);font-size:0.88rem;max-width:44ch;margin:0 auto 22px;">This runs the pattern-detection model across all uploaded data types and groups participants by similarity.</p>
+        <button class="btn btn-primary" id="run-btn">Run Analysis</button>
+      </div>`;
+    document.getElementById('run-btn').onclick = ()=>{
+      body.innerHTML = `<div class="card run-panel"><div class="spinner"></div><p>Analyzing ${list.length} participants across 5 data types…</p></div>`;
+      setTimeout(()=>{
+        state.cohortRun[study.id] = true;
+        persist();
+        renderCohortPage(study);
+      }, 1100);
+    };
+    return;
+  }
+
+  document.getElementById('rerun-btn').onclick = ()=>{
+    state.cohortRun[study.id] = false;
+    persist();
+    renderCohortPage(study);
+  };
+
+  let codeOffset = 0;
+  body.innerHTML = `
+    <div class="cohort-layout">
+      <div class="card">
+        <div class="legend">
+          ${GROUPS.map(g=>`<span class="item"><span class="sw" style="background:var(--${g.color})"></span>${g.title}</span>`).join('')}
+        </div>
+        <div class="cluster-svg-wrap">
+          <svg id="cluster-svg" width="100%" viewBox="0 0 560 340">
+            ${CLUSTER_DOTS.map(d=>`<circle class="dot" data-group="${d.group}" cx="${d.x}" cy="${d.y}" r="7" fill="var(--${GROUPS.find(g=>g.id===d.group).color})" opacity="0.85"/>`).join('')}
+          </svg>
+        </div>
+      </div>
+      <div id="group-cards">
+        ${GROUPS.map(g=>{
+          const codes = sampleCodesForGroup(list, g.n, codeOffset);
+          codeOffset += g.n;
+          return `
+          <div class="group-card" data-group="${g.id}" style="color:var(--${g.color})">
+            <div class="gtitle"><span class="sw" style="background:var(--${g.color})"></span><h4>${g.title}</h4><span class="n">${g.n} pts</span></div>
+            <p>${g.desc}</p>
+            <div class="codes">${codes.map(c=>`<span>${c}</span>`).join('')}</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+  `;
+
+  const cards = body.querySelectorAll('.group-card');
+  cards.forEach(card=>{
+    card.onclick = ()=>{
+      const gid = card.getAttribute('data-group');
+      const already = card.classList.contains('selected');
+      cards.forEach(c=>c.classList.remove('selected'));
+      body.querySelectorAll('#cluster-svg .dot').forEach(dot=>{
+        if(already){ dot.style.opacity=0.85; }
+        else{ dot.style.opacity = dot.getAttribute('data-group')===gid ? 1 : 0.12; }
+      });
+      if(!already) card.classList.add('selected');
+    };
+  });
+}
+
+function sampleCodesForGroup(list, n, offset){
+  if(!list.length) return [];
+  const out = [];
+  const shown = Math.min(n,6);
+  for(let i=0;i<shown;i++){ out.push(list[(offset+i)%list.length].code); }
+  if(n>shown) out.push('+'+(n-shown)+' more');
+  return out;
+}
+</script>
 </body>
 </html>
