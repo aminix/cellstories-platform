@@ -154,13 +154,10 @@
   .status-row .lbl{ font-size:0.68rem; color:var(--ink-faint); font-family:var(--mono); }
 
   .completion{ display:flex; align-items:center; gap:8px; }
-  .completion-track{ width:56px; height:6px; border-radius:4px; background:var(--grey-soft); overflow:hidden; flex-shrink:0; border:1px solid var(--line); }
-  .completion-fill{
-    height:100%; border-radius:4px; transition:width .2s ease;
-    background-image:linear-gradient(90deg, #FFFFFF 0%, var(--azure) 58%, var(--coral) 100%);
-    background-size:54px 100%; background-repeat:no-repeat;
-  }
+  .completion-track{ width:56px; height:6px; border-radius:4px; background:var(--grey-soft); overflow:hidden; flex-shrink:0; }
+  .completion-fill{ height:100%; border-radius:4px; background:linear-gradient(90deg, var(--azure-dim), var(--azure)); transition:width .2s ease, background .2s ease; }
   .completion-pct{ font-family:var(--mono); font-size:0.76rem; font-weight:500; color:var(--azure-dim); font-variant-numeric:tabular-nums; }
+  .completion.complete .completion-fill{ background:var(--coral); }
   .completion.complete .completion-pct{ color:var(--coral-hover); }
 
   .table-toolbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
@@ -220,19 +217,13 @@
   .cluster-svg-wrap{ padding:10px; }
   .legend{ display:flex; gap:18px; flex-wrap:wrap; padding:14px 26px 4px; font-size:0.8rem; color:var(--ink-dim); }
   .legend .item{ display:flex; align-items:center; gap:7px; }
-  .legend .sw{
-    width:16px; height:16px; border-radius:50%; display:flex; align-items:center; justify-content:center;
-    font-family:var(--display); font-weight:700; font-size:0.62rem; color:#fff; flex-shrink:0;
-  }
+  .legend .sw{ width:10px; height:10px; border-radius:50%; }
 
   .group-card{ border:1px solid var(--line); border-radius:12px; padding:16px 18px; margin-bottom:12px; cursor:pointer; transition:all .15s; background:var(--card); }
   .group-card:hover{ border-color:var(--ink-faint); }
   .group-card.selected{ border-color:currentColor; box-shadow:0 0 0 1px currentColor; }
   .group-card .gtitle{ display:flex; align-items:center; gap:9px; margin-bottom:8px; }
-  .group-card .sw{
-    width:18px; height:18px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center;
-    font-family:var(--display); font-weight:700; font-size:0.66rem; color:#fff;
-  }
+  .group-card .sw{ width:11px; height:11px; border-radius:50%; flex-shrink:0; }
   .group-card h4{ font-size:0.92rem; font-family:var(--display); color:var(--ink); }
   .group-card .n{ font-size:0.76rem; color:var(--ink-faint); font-family:var(--mono); margin-left:auto; }
   .group-card p{ font-size:0.84rem; color:var(--ink-dim); }
@@ -316,14 +307,14 @@ function seedState(){
       { id:'mgh-pilot', name:'Mass General — Metabolic Pilot', prefix:'MGH', desc:'External pilot study with a hospital research team focused on metabolic disease subtyping.' },
     ],
     participants:{
-      'cs-internal': makeParticipants('CS', 50, '2026-07-20'),
+      'cs-internal': makeParticipants('CS', 18, '2026-07-20'),
       'mgh-pilot': makeParticipants('MGH', 11, '2026-07-18'),
     },
     cohortRun:{}
   };
 }
 
-const STORE_KEY = 'cshub_prototype_v2';
+const STORE_KEY = 'cshub_prototype_v1';
 let state;
 try{
   const raw = localStorage.getItem(STORE_KEY);
@@ -716,59 +707,30 @@ function sparkline(values, color){
 
 /* ---------------- Cohort Analysis Page ---------------- */
 const GROUPS = [
-  { id:'a', num:1, color:'sage',  n:17, title:'Metabolic-risk subtype',
+  { id:'a', color:'sage',  n:14, title:'Metabolic-risk subtype',
     desc:'Family history of Type 2 Diabetes, TCF7L2/PPARG risk variants. Organoids show strong response to Treatment X (GLP‑1 analog).' },
-  { id:'b', num:2, color:'azure', n:13, title:'Inflammatory subtype',
+  { id:'b', color:'azure', n:11, title:'Inflammatory subtype',
     desc:'Elevated hs-CRP and reduced heart-rate variability on wearable data. Organoids show inflammatory pathway activation, partial response to Treatment Y.' },
-  { id:'c', num:3, color:'coral', n:11, title:'Low-response subtype',
+  { id:'c', color:'coral', n:9,  title:'Low-response subtype',
     desc:'BRCA-adjacent variant carriers with an otherwise normal blood panel. Organoids show minimal response across the drug panel — candidates for combination therapy.' },
-  { id:'u', num:4, color:'grey',  n:9,  title:'Unclassified',
+  { id:'u', color:'grey',  n:8,  title:'Unclassified',
     desc:'Not enough uploaded data yet to confidently assign a subtype. Awaiting additional blood/genetic/wearable uploads.' },
 ];
 
-const CLUSTER_VB = { w:640, h:400, padL:46, padB:40, padT:14, padR:40 };
-const CLUSTER_CENTERS = { a:[190,180], b:[460,140], c:[360,300], u:[545,290] };
-const CLUSTER_SPREAD  = { a:56, b:48, c:44, u:52 };
-
 function buildClusterDots(){
   const rnd = seedRandom(7);
-  function jitter(spread){ return ((rnd()+rnd()+rnd()+rnd())/4 - 0.5) * 2 * spread; }
+  const centers = { a:[150,150], b:[380,120], c:[300,260], u:[470,250] };
   const dots = [];
   GROUPS.forEach(g=>{
-    const [cx,cy] = CLUSTER_CENTERS[g.id];
-    const sp = CLUSTER_SPREAD[g.id];
     for(let i=0;i<g.n;i++){
-      dots.push({ group:g.id, x:cx+jitter(sp), y:cy+jitter(sp)*0.82 });
+      const [cx,cy] = centers[g.id];
+      const ang = rnd()*Math.PI*2, rad = rnd()*46;
+      dots.push({ group:g.id, x:cx+Math.cos(ang)*rad, y:cy+Math.sin(ang)*rad });
     }
   });
   return dots;
 }
 const CLUSTER_DOTS = buildClusterDots();
-
-function renderClusterSVG(){
-  const { w,h,padL,padB,padT,padR } = CLUSTER_VB;
-  const axisY = h-padB, axisRight = w-padR;
-  const axis = `
-    <line x1="${padL}" y1="${padT}" x2="${padL}" y2="${axisY}" stroke="var(--ink-faint)" stroke-width="1.2"/>
-    <path d="M${padL-4},${padT+6} L${padL},${padT} L${padL+4},${padT+6}" fill="none" stroke="var(--ink-faint)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-    <line x1="${padL}" y1="${axisY}" x2="${axisRight}" y2="${axisY}" stroke="var(--ink-faint)" stroke-width="1.2"/>
-    <path d="M${axisRight-6},${axisY-4} L${axisRight},${axisY} L${axisRight-6},${axisY+4}" fill="none" stroke="var(--ink-faint)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-    <text x="${padL+8}" y="${axisY+22}" font-family="var(--mono)" font-size="10.5" letter-spacing="0.04em" fill="var(--ink-faint)">UMAP-1</text>
-    <text x="14" y="${padT+56}" font-family="var(--mono)" font-size="10.5" letter-spacing="0.04em" fill="var(--ink-faint)" transform="rotate(-90 14 ${padT+56})">UMAP-2</text>
-  `;
-  const dots = CLUSTER_DOTS.map(d=>{
-    const g = GROUPS.find(gr=>gr.id===d.group);
-    return `<circle class="dot" data-group="${d.group}" cx="${d.x.toFixed(1)}" cy="${d.y.toFixed(1)}" r="4.5" fill="var(--${g.color})" opacity="0.75"/>`;
-  }).join('');
-  const labels = GROUPS.map(g=>{
-    const [cx,cy] = CLUSTER_CENTERS[g.id];
-    return `<g class="cluster-label">
-      <circle cx="${cx}" cy="${cy}" r="12" fill="#fff" stroke="var(--${g.color})" stroke-width="2"/>
-      <text x="${cx}" y="${cy+4}" text-anchor="middle" font-family="var(--display)" font-weight="700" font-size="12" fill="var(--ink)">${g.num}</text>
-    </g>`;
-  }).join('');
-  return `<svg id="cluster-svg" width="100%" viewBox="0 0 ${w} ${h}">${axis}${dots}${labels}</svg>`;
-}
 
 function renderCohortPage(study){
   renderBreadcrumb([{label:'All Studies',href:'#/'},{label:study.name,href:'#/'+study.id},{label:'Cohort Analysis',href:'#'}]);
@@ -823,10 +785,12 @@ function renderCohortPage(study){
     <div class="cohort-layout">
       <div class="card">
         <div class="legend">
-          ${GROUPS.map(g=>`<span class="item"><span class="sw" style="background:var(--${g.color})">${g.num}</span>${g.title}</span>`).join('')}
+          ${GROUPS.map(g=>`<span class="item"><span class="sw" style="background:var(--${g.color})"></span>${g.title}</span>`).join('')}
         </div>
         <div class="cluster-svg-wrap">
-          ${renderClusterSVG()}
+          <svg id="cluster-svg" width="100%" viewBox="0 0 560 340">
+            ${CLUSTER_DOTS.map(d=>`<circle class="dot" data-group="${d.group}" cx="${d.x}" cy="${d.y}" r="7" fill="var(--${GROUPS.find(g=>g.id===d.group).color})" opacity="0.85"/>`).join('')}
+          </svg>
         </div>
       </div>
       <div id="group-cards">
@@ -835,7 +799,7 @@ function renderCohortPage(study){
           codeOffset += g.n;
           return `
           <div class="group-card" data-group="${g.id}" style="color:var(--${g.color})">
-            <div class="gtitle"><span class="sw" style="background:var(--${g.color})">${g.num}</span><h4>${g.title}</h4><span class="n">${g.n} pts</span></div>
+            <div class="gtitle"><span class="sw" style="background:var(--${g.color})"></span><h4>${g.title}</h4><span class="n">${g.n} pts</span></div>
             <p>${g.desc}</p>
             <div class="codes">${codes.map(c=>`<span>${c}</span>`).join('')}</div>
           </div>`;
@@ -851,8 +815,8 @@ function renderCohortPage(study){
       const already = card.classList.contains('selected');
       cards.forEach(c=>c.classList.remove('selected'));
       body.querySelectorAll('#cluster-svg .dot').forEach(dot=>{
-        if(already){ dot.style.opacity=0.75; }
-        else{ dot.style.opacity = dot.getAttribute('data-group')===gid ? 0.95 : 0.1; }
+        if(already){ dot.style.opacity=0.85; }
+        else{ dot.style.opacity = dot.getAttribute('data-group')===gid ? 1 : 0.12; }
       });
       if(!already) card.classList.add('selected');
     };
