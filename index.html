@@ -155,10 +155,10 @@
 
   .completion{ display:flex; align-items:center; gap:8px; }
   .completion-track{ width:56px; height:6px; border-radius:4px; background:var(--grey-soft); overflow:hidden; flex-shrink:0; }
-  .completion-fill{ height:100%; border-radius:4px; background:var(--azure); transition:width .2s ease; }
+  .completion-fill{ height:100%; border-radius:4px; background:linear-gradient(90deg, var(--azure-dim), var(--azure)); transition:width .2s ease, background .2s ease; }
   .completion-pct{ font-family:var(--mono); font-size:0.76rem; font-weight:500; color:var(--azure-dim); font-variant-numeric:tabular-nums; }
-  .completion.complete .completion-fill{ background:var(--sage); }
-  .completion.complete .completion-pct{ color:var(--sage-dim); }
+  .completion.complete .completion-fill{ background:var(--coral); }
+  .completion.complete .completion-pct{ color:var(--coral-hover); }
 
   .table-toolbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
   .tabs{ display:flex; gap:4px; background:var(--bg); padding:4px; border-radius:10px; width:fit-content; margin-bottom:24px; }
