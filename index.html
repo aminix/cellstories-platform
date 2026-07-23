@@ -62,38 +62,38 @@
   .shell{ display:flex; min-height:100vh; }
 
   .sidebar{
-    width:232px; flex-shrink:0; background:var(--card); border-right:1px solid var(--line);
+    width:232px; flex-shrink:0; background:var(--dark);
     padding:24px 16px; display:flex; flex-direction:column; gap:24px; position:sticky; top:0; height:100vh;
   }
   .brand{ display:flex; align-items:center; gap:10px; padding:4px 8px 8px; }
-  .brand .mark{ width:28px; height:28px; border-radius:8px; background:linear-gradient(135deg, var(--sage), var(--azure)); flex-shrink:0; }
-  .brand span{ font-family:var(--display); font-weight:700; font-size:1.05rem; color:var(--ink); }
+  .brand .mark{ width:26px; height:26px; flex-shrink:0; }
+  .brand span{ font-family:var(--display); font-weight:700; font-size:1.05rem; color:var(--white); }
 
   .proto-badge{
     font-family:var(--mono); font-size:0.68rem; letter-spacing:0.04em; text-transform:uppercase;
-    color:var(--coral-hover); background:var(--coral-soft); border:1px solid #F6CFC4;
+    color:#FFB199; background:rgba(242,115,91,0.14); border:1px solid rgba(242,115,91,0.32);
     padding:4px 8px; border-radius:6px; display:inline-block; width:fit-content; margin:0 8px;
   }
 
   .nav-group{ display:flex; flex-direction:column; gap:2px; }
-  .nav-label{ font-family:var(--mono); font-size:0.68rem; text-transform:uppercase; letter-spacing:0.07em; color:var(--ink-faint); padding:0 10px; margin-bottom:6px; }
+  .nav-label{ font-family:var(--mono); font-size:0.68rem; text-transform:uppercase; letter-spacing:0.07em; color:rgba(251,251,251,0.38); padding:0 10px; margin-bottom:6px; }
   .nav-link{
     display:flex; align-items:center; gap:10px; padding:9px 10px; border-radius:8px;
-    font-size:0.9rem; color:var(--ink-dim); font-weight:500;
+    font-size:0.9rem; color:rgba(251,251,251,0.72); font-weight:500;
   }
-  .nav-link:hover{ background:var(--bg); color:var(--ink); }
-  .nav-link.active{ background:var(--sage-soft); color:var(--sage-dim); font-weight:600; }
-  .nav-link .dot{ width:6px; height:6px; border-radius:50%; background:currentColor; opacity:0.5; flex-shrink:0; }
+  .nav-link:hover{ background:rgba(251,251,251,0.07); color:var(--white); }
+  .nav-link.active{ background:rgba(86,183,126,0.16); color:#7FD9A3; font-weight:600; }
+  .nav-link .dot{ width:6px; height:6px; border-radius:50%; background:currentColor; opacity:0.6; flex-shrink:0; }
 
   .main{ flex:1; min-width:0; }
   .topbar{
     display:flex; align-items:center; justify-content:space-between; padding:18px 40px;
-    border-bottom:1px solid var(--line); background:var(--card);
+    border-bottom:1px solid rgba(251,251,251,0.1); background:var(--dark);
   }
-  .breadcrumb{ font-size:0.86rem; color:var(--ink-faint); display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
-  .breadcrumb a:hover{ color:var(--ink); }
-  .breadcrumb .sep{ color:var(--line); }
-  .breadcrumb .current{ color:var(--ink); font-weight:600; }
+  .breadcrumb{ font-size:0.86rem; color:rgba(251,251,251,0.55); display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .breadcrumb a:hover{ color:var(--white); }
+  .breadcrumb .sep{ color:rgba(251,251,251,0.25); }
+  .breadcrumb .current{ color:var(--white); font-weight:600; }
 
   .content{ padding:36px 40px 80px; max-width:1180px; }
 
@@ -346,7 +346,14 @@ function renderSidebar(parts){
   const studyId = parts[0];
   const study = state.studies.find(s=>s.id===studyId);
   let html = `
-    <div class="brand"><div class="mark"></div><span>CellStories Hub</span></div>
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="11" stroke="#FBFBFB" stroke-width="1.1"/>
+        <circle cx="9" cy="10" r="3.4" fill="#56B77E"/>
+        <circle cx="15" cy="15" r="2.2" fill="#F2735B"/>
+      </svg>
+      <span>CellStories Hub</span>
+    </div>
     <div class="proto-badge">Prototype · Sample Data</div>
     <div class="nav-group">
       <div class="nav-label">Workspace</div>
