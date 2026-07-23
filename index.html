@@ -473,16 +473,17 @@ function renderParticipantsPage(study){
       <div class="table-scroll">
       <table class="ptable">
         <thead><tr>
-          <th>Code</th><th>Completion</th><th>Added</th>
+          <th>Completion</th><th>Code</th>
           ${DATA_TYPES.map(dt=>`<th>${dt.icon} ${dt.label}</th>`).join('')}
+          <th>Added</th>
         </tr></thead>
         <tbody>
           ${list.map(p=>`
             <tr onclick="location.hash='#/${study.id}/participant/${p.code}'">
-              <td class="code-cell">${p.code}</td>
               <td>${completionBar(p)}</td>
-              <td>${p.added}</td>
+              <td class="code-cell">${p.code}</td>
               ${DATA_TYPES.map(dt=>`<td><span class="status-dot ${p.status[dt.key]?'on':'off'}"></span></td>`).join('')}
+              <td>${p.added}</td>
             </tr>`).join('') || `<tr><td colspan="${3+DATA_TYPES.length}" style="text-align:center;color:var(--ink-faint);padding:30px;">No participants yet — add the first one.</td></tr>`}
         </tbody>
       </table>
