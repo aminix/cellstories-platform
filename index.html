@@ -234,6 +234,48 @@
   .run-panel .spinner{ width:28px; height:28px; border-radius:50%; border:3px solid var(--line); border-top-color:var(--sage); margin:0 auto 18px; animation:spin 0.8s linear infinite; }
   @keyframes spin{ to{ transform:rotate(360deg); } }
 
+  /* ---------- Study Report ---------- */
+  .report-actions{ display:flex; gap:10px; margin-bottom:20px; }
+  .report-draft-banner{
+    display:flex; align-items:center; gap:10px; background:var(--coral-soft); border:1px solid #F6CFC4;
+    color:var(--coral-hover); font-family:var(--mono); font-size:0.74rem; letter-spacing:0.03em; text-transform:uppercase;
+    padding:10px 16px; border-radius:10px; margin-bottom:20px;
+  }
+  .report-doc{ background:var(--card); border:1px solid var(--line); border-radius:14px; max-width:840px; margin:0 auto; padding:48px 56px; }
+  .report-cover{ border-bottom:2px solid var(--ink); padding-bottom:24px; margin-bottom:32px; }
+  .report-cover .kicker{ font-family:var(--mono); font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--sage-dim); margin-bottom:10px; }
+  .report-cover h1{ font-size:1.7rem; margin-bottom:6px; }
+  .report-cover .subtitle{ color:var(--ink-faint); font-size:1rem; margin-bottom:20px; }
+  .report-meta-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+  .report-meta-grid div{ display:flex; flex-direction:column; gap:3px; }
+  .report-meta-grid .k{ font-family:var(--mono); font-size:0.66rem; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-faint); }
+  .report-meta-grid .v{ font-size:0.88rem; color:var(--ink); font-weight:600; }
+  .report-section{ margin-bottom:32px; }
+  .report-section h2{ font-size:1.15rem; padding-bottom:8px; border-bottom:1px solid var(--line); margin-bottom:14px; }
+  .report-section h3{ font-size:0.96rem; margin:18px 0 8px; }
+  .report-section p{ font-size:0.92rem; line-height:1.7; margin-bottom:12px; max-width:70ch; }
+  .report-section ul, .report-section ol{ padding-left:22px; margin-bottom:12px; }
+  .report-section li{ font-size:0.92rem; line-height:1.7; margin-bottom:6px; }
+  .report-section table{ margin-bottom:12px; }
+  .report-section .report-table th, .report-section .report-table td{ font-size:0.82rem; padding:9px 12px; }
+  .report-table{ border:1px solid var(--line); border-radius:10px; overflow:hidden; width:100%; }
+  .report-callout{
+    background:var(--bg); border-left:3px solid var(--sage); border-radius:0 8px 8px 0;
+    padding:14px 18px; font-size:0.88rem; color:var(--ink-dim); margin-bottom:14px;
+  }
+  .report-subtype-row{ display:flex; align-items:flex-start; gap:12px; margin-bottom:14px; }
+  .report-subtype-row .sw{
+    width:22px; height:22px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center;
+    font-family:var(--display); font-weight:700; font-size:0.72rem; color:#fff; margin-top:1px;
+  }
+  .report-footer{ margin-top:36px; padding-top:16px; border-top:1px solid var(--line); font-family:var(--mono); font-size:0.72rem; color:var(--ink-faint); }
+
+  @media print{
+    .sidebar, .topbar, .tabs, .report-actions, .proto-badge{ display:none !important; }
+    body, .content{ background:#fff; padding:0; margin:0; }
+    .report-doc{ border:none; max-width:none; padding:0; }
+  }
+
   /* ---------- Modal ---------- */
   .overlay{ position:fixed; inset:0; background:rgba(22,33,30,0.4); display:flex; align-items:center; justify-content:center; z-index:50; padding:20px; }
   .modal{ background:var(--card); border-radius:16px; padding:28px; width:100%; max-width:400px; box-shadow:0 20px 60px rgba(0,0,0,0.2); }
@@ -276,6 +318,11 @@
 
     .kv-grid{ grid-template-columns:1fr; }
     .cluster-svg-wrap{ padding:6px; }
+
+    .report-doc{ padding:26px 18px; }
+    .report-meta-grid{ grid-template-columns:1fr 1fr; }
+    .report-actions{ flex-direction:column; }
+    .report-actions .btn{ width:100%; justify-content:center; }
   }
 
   @media (max-width:480px){
@@ -339,7 +386,8 @@ function seedState(){
       'cs-internal': makeParticipants('CS', 18, '2026-07-20'),
       'mgh-pilot': makeParticipants('MGH', 11, '2026-07-18'),
     },
-    cohortRun:{}
+    cohortRun:{},
+    reportGenerated:{}
   };
 }
 
@@ -349,6 +397,7 @@ try{
   const raw = localStorage.getItem(STORE_KEY);
   state = raw ? JSON.parse(raw) : seedState();
 }catch(e){ state = seedState(); }
+if(!state.reportGenerated) state.reportGenerated = {};
 function persist(){ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }
 
 function toast(msg){
@@ -376,6 +425,7 @@ function render(){
   const study = state.studies.find(s=>s.id===studyId);
   if(!study){ location.hash=''; return; }
   if(parts[1]==='cohort'){ return renderCohortPage(study); }
+  if(parts[1]==='report'){ return renderReportPage(study); }
   if(parts[1]==='participant' && parts[2]){ return renderParticipantPage(study, parts[2]); }
   return renderParticipantsPage(study);
 }
@@ -404,6 +454,7 @@ function renderSidebar(parts){
       <div class="nav-label">${escapeHtml(study.name)}</div>
       <a class="nav-link ${(!parts[1])?'active':''}" href="#/${study.id}"><span class="dot"></span>Participants</a>
       <a class="nav-link ${parts[1]==='cohort'?'active':''}" href="#/${study.id}/cohort"><span class="dot"></span>Cohort Analysis</a>
+      <a class="nav-link ${parts[1]==='report'?'active':''}" href="#/${study.id}/report"><span class="dot"></span>Study Report</a>
     </div>`;
   }
   document.getElementById('sidebar').innerHTML = html;
@@ -497,6 +548,7 @@ function renderParticipantsPage(study){
     <div class="tabs">
       <a class="tab active" href="#/${study.id}">Participants</a>
       <a class="tab" href="#/${study.id}/cohort">Cohort Analysis</a>
+      <a class="tab" href="#/${study.id}/report">Study Report</a>
     </div>
     <div class="card">
       <div class="table-scroll">
@@ -779,6 +831,7 @@ function renderCohortPage(study){
     <div class="tabs">
       <a class="tab" href="#/${study.id}">Participants</a>
       <a class="tab active" href="#/${study.id}/cohort">Cohort Analysis</a>
+      <a class="tab" href="#/${study.id}/report">Study Report</a>
     </div>
     <div id="cohort-body"></div>
   `;
@@ -859,6 +912,232 @@ function sampleCodesForGroup(list, n, offset){
   for(let i=0;i<shown;i++){ out.push(list[(offset+i)%list.length].code); }
   if(n>shown) out.push('+'+(n-shown)+' more');
   return out;
+}
+
+function allCodesForGroup(list, n, offset){
+  if(!list.length) return [];
+  const out = [];
+  for(let i=0;i<n;i++){ out.push(list[(offset+i)%list.length].code); }
+  return out;
+}
+
+/* ---------------- Study Report ---------------- */
+function computeCompletionStats(list){
+  const total = list.length;
+  let sumPct = 0, fullyComplete = 0, noData = 0;
+  const perType = {}; DATA_TYPES.forEach(dt=>perType[dt.key]=0);
+  list.forEach(p=>{
+    const done = Object.values(p.status).filter(Boolean).length;
+    sumPct += (done/DATA_TYPES.length)*100;
+    if(done===DATA_TYPES.length) fullyComplete++;
+    if(done===0) noData++;
+    DATA_TYPES.forEach(dt=>{ if(p.status[dt.key]) perType[dt.key]++; });
+  });
+  const avgPct = total ? Math.round(sumPct/total) : 0;
+  return { total, avgPct, fullyComplete, noData, partial: total-fullyComplete-noData, perType };
+}
+
+function renderReportPage(study){
+  renderBreadcrumb([{label:'All Studies',href:'#/'},{label:study.name,href:'#/'+study.id},{label:'Study Report',href:'#'}]);
+  const app = document.getElementById('app');
+  const list = state.participants[study.id] || [];
+  const hasCohort = !!state.cohortRun[study.id];
+  const generated = !!state.reportGenerated[study.id];
+
+  app.innerHTML = `
+    <div class="page-head">
+      <div>
+        <span class="eyebrow">${escapeHtml(study.prefix)} · Report</span>
+        <h1>Study Report</h1>
+        <p>A structured summary of cohort data, subtype findings, and readiness considerations for advancing this program toward clinical development.</p>
+      </div>
+    </div>
+    <div class="tabs">
+      <a class="tab" href="#/${study.id}">Participants</a>
+      <a class="tab" href="#/${study.id}/cohort">Cohort Analysis</a>
+      <a class="tab active" href="#/${study.id}/report">Study Report</a>
+    </div>
+    <div id="report-body"></div>
+  `;
+
+  const body = document.getElementById('report-body');
+
+  if(!hasCohort){
+    body.innerHTML = `
+      <div class="card run-panel">
+        <h3 style="margin-bottom:8px;">Run cohort analysis first</h3>
+        <p style="color:var(--ink-faint);font-size:0.88rem;max-width:46ch;margin:0 auto 22px;">The study report includes subtype findings from the cohort analysis. Run that first so this report has something to summarize.</p>
+        <a class="btn btn-primary" href="#/${study.id}/cohort">Go to Cohort Analysis</a>
+      </div>`;
+    return;
+  }
+
+  if(!generated){
+    body.innerHTML = `
+      <div class="card run-panel">
+        <h3 style="margin-bottom:8px;">Ready to generate the study report</h3>
+        <p style="color:var(--ink-faint);font-size:0.88rem;max-width:48ch;margin:0 auto 22px;">Compiles participant disposition, per-modality data summaries, cohort subtype findings, and regulatory considerations into a single report.</p>
+        <button class="btn btn-primary" id="gen-report-btn">Generate Report</button>
+      </div>`;
+    document.getElementById('gen-report-btn').onclick = ()=>{
+      body.innerHTML = `<div class="card run-panel"><div class="spinner"></div><p>Compiling report from ${list.length} participants…</p></div>`;
+      setTimeout(()=>{
+        state.reportGenerated[study.id] = true;
+        persist();
+        renderReportPage(study);
+      }, 1100);
+    };
+    return;
+  }
+
+  const stats = computeCompletionStats(list);
+  const topGroup = GROUPS.slice().sort((a,b)=>b.n-a.n)[0];
+  const today = new Date().toISOString().slice(0,10);
+
+  body.innerHTML = `
+    <div class="report-actions">
+      <button class="btn btn-secondary" id="print-report-btn">Print / Save as PDF</button>
+      <button class="btn btn-ghost" id="regen-report-btn">Regenerate</button>
+    </div>
+    <div class="report-draft-banner">⚠ Draft report — sample data — not for regulatory submission</div>
+    <div class="report-doc">
+      <div class="report-cover">
+        <div class="kicker">CellStories Platform · Cohort Study Report</div>
+        <h1>${escapeHtml(study.name)}</h1>
+        <div class="subtitle">Preclinical Cohort Data Summary &amp; Clinical Readiness Report</div>
+        <div class="report-meta-grid">
+          <div><span class="k">Study ID</span><span class="v">${escapeHtml(study.prefix)}</span></div>
+          <div><span class="k">Report Date</span><span class="v">${today}</span></div>
+          <div><span class="k">Version</span><span class="v">v1.0 (Draft)</span></div>
+          <div><span class="k">Prepared By</span><span class="v">CellStories Bio</span></div>
+        </div>
+      </div>
+
+      <div class="report-section">
+        <h2>1. Executive Summary</h2>
+        <p>This report summarizes data collected from <strong>${stats.total} participants</strong> enrolled in ${escapeHtml(study.name)}, across five data modalities: blood markers, medical history, genetic/sequencing results, wearable device and symptom data, and organoid drug-response experiments. Average data completeness across the cohort is <strong>${stats.avgPct}%</strong>, with ${stats.fullyComplete} participant${stats.fullyComplete===1?'':'s'} fully complete across all five modalities.</p>
+        <p>Cross-modality pattern analysis identified <strong>${GROUPS.length} candidate subtypes</strong>. The largest, <strong>${topGroup.title}</strong> (${topGroup.n} participants), shows the clearest translational signal and is recommended as the priority population for early clinical protocol design. Detailed findings, limitations, and regulatory considerations follow.</p>
+      </div>
+
+      <div class="report-section">
+        <h2>2. Study Objectives</h2>
+        <ol>
+          <li>Establish a unified data collection pipeline spanning clinical, molecular, digital, and functional (organoid) endpoints under a single participant coding scheme.</li>
+          <li>Apply cross-modality pattern discovery to identify candidate disease subtypes within the cohort.</li>
+          <li>Generate a translational rationale and structured dataset suitable for informing a future clinical development and regulatory strategy.</li>
+        </ol>
+      </div>
+
+      <div class="report-section">
+        <h2>3. Study Design &amp; Methodology</h2>
+        <h3>3.1 Cohort</h3>
+        <p>${escapeHtml(study.desc || study.name)} Participants are assigned a unique, study-scoped identifier (format <code>${escapeHtml(study.prefix)}-#####</code>) at enrollment to support traceability across all data modalities without relying on directly identifying information.</p>
+        <h3>3.2 Data Modalities</h3>
+        <table class="report-table">
+          <thead><tr><th>Modality</th><th>Source</th></tr></thead>
+          <tbody>
+            ${DATA_TYPES.map(dt=>`<tr><td>${dt.icon} ${dt.label}</td><td>${dataTypeSub(dt.key)}</td></tr>`).join('')}
+          </tbody>
+        </table>
+        <h3>3.3 Analytical Approach</h3>
+        <p>A multi-modal similarity model integrates structured and unstructured features across all five data types to group participants by shared biological and clinical characteristics, without relying on any single modality in isolation.</p>
+      </div>
+
+      <div class="report-section">
+        <h2>4. Participant Disposition</h2>
+        <table class="report-table">
+          <thead><tr><th>Metric</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Total enrolled</td><td>${stats.total}</td></tr>
+            <tr><td>Fully complete (5/5 modalities)</td><td>${stats.fullyComplete}</td></tr>
+            <tr><td>Partial data</td><td>${stats.partial}</td></tr>
+            <tr><td>No data uploaded</td><td>${stats.noData}</td></tr>
+            <tr><td>Average completeness</td><td>${stats.avgPct}%</td></tr>
+          </tbody>
+        </table>
+        <h3>Completeness by Modality</h3>
+        <table class="report-table">
+          <thead><tr><th>Modality</th><th>Participants with data</th><th>%</th></tr></thead>
+          <tbody>
+            ${DATA_TYPES.map(dt=>{
+              const c = stats.perType[dt.key];
+              const pct = stats.total ? Math.round(c/stats.total*100) : 0;
+              return `<tr><td>${dt.label}</td><td>${c} / ${stats.total}</td><td>${pct}%</td></tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="report-section">
+        <h2>5. Results</h2>
+        <h3>5.1 Cohort Subtype Analysis</h3>
+        <p>Pattern analysis across all uploaded data identified ${GROUPS.length} candidate subtypes, summarized below.</p>
+        ${GROUPS.map((g,i)=>`
+          <div class="report-subtype-row">
+            <span class="sw" style="background:var(--${g.color})">${i+1}</span>
+            <div><strong>${g.title}</strong> — ${g.n} participants (${Math.round(g.n/stats.total*100)}%)<br/><span style="color:var(--ink-dim);font-size:0.88rem;">${g.desc}</span></div>
+          </div>`).join('')}
+        <h3>5.2 Cross-Modality Correlations</h3>
+        <p>The subtypes above were only resolvable by combining modalities: genetic risk variants alone, or organoid response alone, did not cleanly separate the cohort. Family history and germline variant status aligned closely with organoid treatment response in the Metabolic-risk subtype, while wearable-derived physiological signals aligned with inflammatory marker elevation in the Inflammatory subtype — supporting the value of the multi-modal design.</p>
+      </div>
+
+      <div class="report-section">
+        <h2>6. Discussion</h2>
+        <p><strong>${topGroup.title}</strong> presents the clearest actionable signal, with a defined genetic and clinical profile and a consistent organoid treatment response, making it the strongest near-term candidate for a targeted clinical protocol. The Low-response subtype flags a population unlikely to benefit from monotherapy and worth excluding or re-stratifying in future protocol design. The Unclassified group underscores the importance of complete data capture — its members are not biologically indeterminate, only incompletely profiled.</p>
+      </div>
+
+      <div class="report-section">
+        <h2>7. Regulatory &amp; Data Integrity Considerations</h2>
+        <div class="report-callout">This is a prototype built on synthetic sample data. It illustrates the report a production, GxP-compliant version of this platform would generate — it is not itself a validated system of record.</div>
+        <ul>
+          <li><strong>Participant coding &amp; de-identification:</strong> study-scoped codes avoid direct identifiers across all uploaded files.</li>
+          <li><strong>Data provenance:</strong> each upload should retain source filename, upload timestamp, and an immutable audit trail.</li>
+          <li><strong>Good Clinical Practice (GCP):</strong> formal protocols, informed consent, and IRB/Ethics Committee approval are required before any human-subjects clinical use.</li>
+          <li><strong>21 CFR Part 11 / electronic records:</strong> production systems handling data intended for regulatory submission need validated audit trails, access controls, and e-signature support.</li>
+          <li><strong>HIPAA / GDPR:</strong> formal data protection agreements and access controls are required wherever real patient data is involved.</li>
+          <li><strong>Regulatory engagement:</strong> a pre-IND or scientific advice meeting is recommended to align this dataset structure and subtype rationale with regulator expectations before clinical protocol submission.</li>
+        </ul>
+      </div>
+
+      <div class="report-section">
+        <h2>8. Conclusions &amp; Recommendations</h2>
+        <ol>
+          <li>Prioritize the <strong>${topGroup.title}</strong> population for initial clinical protocol design.</li>
+          <li>Expand cohort enrollment to reach adequate statistical power ahead of a clinical submission.</li>
+          <li>Close data gaps for participants in the Unclassified group before final subtype assignment.</li>
+          <li>Initiate regulatory strategy discussions referencing this dataset structure and subtype findings.</li>
+          <li>Independently replicate organoid treatment-response findings in a follow-up cohort.</li>
+        </ol>
+      </div>
+
+      <div class="report-section">
+        <h2>9. Limitations</h2>
+        <ul>
+          <li>Cohort size (${stats.total} participants) is small relative to typical clinical-stage requirements.</li>
+          <li>Organoid models are a functional surrogate and may not fully predict human treatment response.</li>
+          <li>This report is generated from illustrative sample data for platform demonstration purposes.</li>
+        </ul>
+      </div>
+
+      <div class="report-section">
+        <h2>Appendix A: Participant Listing by Subtype</h2>
+        ${GROUPS.map((g,i)=>{
+          let offset = 0; for(let j=0;j<i;j++) offset += GROUPS[j].n;
+          const codes = allCodesForGroup(list, g.n, offset);
+          return `<p><strong>${i+1}. ${g.title}</strong> — ${codes.join(', ')}</p>`;
+        }).join('')}
+      </div>
+
+      <div class="report-footer">Generated by CellStories Platform · ${today} · Draft — sample data, for internal demonstration only.</div>
+    </div>
+  `;
+
+  document.getElementById('print-report-btn').onclick = ()=> window.print();
+  document.getElementById('regen-report-btn').onclick = ()=>{
+    state.reportGenerated[study.id] = false;
+    persist();
+    renderReportPage(study);
+  };
 }
 </script>
 </body>
