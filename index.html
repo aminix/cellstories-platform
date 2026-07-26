@@ -128,7 +128,7 @@
   .card{ background:var(--card); border:1px solid var(--line); border-radius:14px; }
   .card-pad{ padding:24px 26px; }
 
-  .kpi-row{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:28px; }
+  .kpi-row{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:28px; }
   .kpi-tile{ background:var(--card); border:1px solid var(--line); border-radius:14px; padding:20px; display:flex; align-items:center; gap:14px; }
   .kpi-icon{ width:42px; height:42px; border-radius:11px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
   .kpi-icon .icon{ width:21px; height:21px; }
@@ -680,7 +680,6 @@ function renderStudiesPage(){
     });
   });
   const avgCompletion = slotCount ? Math.round(doneSum/slotCount*100) : 0;
-  const subtypesIdentified = state.studies.reduce((sum,s)=> sum + (state.cohortRun[s.id] ? groupsFor(s).length : 0), 0);
 
   app.innerHTML = `
     <div class="page-head">
@@ -703,10 +702,6 @@ function renderStudiesPage(){
       <div class="kpi-tile">
         <div class="kpi-icon" style="background:var(--coral-soft);color:var(--coral-hover)">${icon('chart')}</div>
         <div><div class="kpi-num">${avgCompletion}%</div><div class="kpi-lbl">Average data completeness</div></div>
-      </div>
-      <div class="kpi-tile">
-        <div class="kpi-icon" style="background:var(--azure-soft);color:var(--azure-dim)">${icon('target')}</div>
-        <div><div class="kpi-num">${subtypesIdentified}</div><div class="kpi-lbl">Candidate subtypes identified</div></div>
       </div>
     </div>
     <div class="study-grid">
