@@ -410,7 +410,8 @@ function seedState(){
     for(let i=1;i<=count;i++){
       const code = prefix+'-'+String(i).padStart(5,'0');
       const status = {};
-      DATA_TYPES.forEach(dt=>{ status[dt.key] = rnd() > 0.28; });
+      const fullyComplete = rnd() < 0.70;
+      DATA_TYPES.forEach(dt=>{ status[dt.key] = fullyComplete ? true : rnd() > 0.35; });
       const d = new Date(addedBase); d.setDate(d.getDate() - Math.floor(rnd()*60));
       arr.push({ code, added: d.toISOString().slice(0,10), status, files:{} });
     }
@@ -423,16 +424,16 @@ function seedState(){
       { id:'glp1-obesity', name:'Obesity — GLP-1 Responder Study', prefix:'GLP', desc:"Internal cohort study characterizing which obesity phenotypes respond best to GLP-1 receptor agonist therapy, pairing metabolic, genetic, and wearable data with organoid drug-response assays." },
     ],
     participants:{
-      'ibd-fibrosis': makeParticipants('IBD', 24, '2026-07-15'),
-      'uf-cohort': makeParticipants('UF', 50, '2026-07-20'),
-      'glp1-obesity': makeParticipants('GLP', 11, '2026-07-18'),
+      'ibd-fibrosis': makeParticipants('IBD', 60, '2026-07-15'),
+      'uf-cohort': makeParticipants('UF', 80, '2026-07-20'),
+      'glp1-obesity': makeParticipants('GLP', 40, '2026-07-18'),
     },
     cohortRun:{},
     reportGenerated:{}
   };
 }
 
-const STORE_KEY = 'cshub_prototype_v4';
+const STORE_KEY = 'cshub_prototype_v5';
 let state;
 try{
   const raw = localStorage.getItem(STORE_KEY);
@@ -833,33 +834,33 @@ function sparkline(values, color){
 /* ---------------- Cohort Analysis Page ---------------- */
 const STUDY_GROUPS = {
   'ibd-fibrosis': [
-    { id:'a', color:'sage',  n:8, title:'Fibrostenotic subtype',
+    { id:'a', color:'sage',  n:20, title:'Fibrostenotic subtype',
       desc:'NOD2/ATG16L1 risk variants with a history of stricturing disease. Organoids show elevated collagen deposition and increased extracellular matrix stiffness, with strong response to Treatment X (anti-fibrotic agent).' },
-    { id:'b', color:'azure', n:6, title:'Inflammatory-predominant subtype',
+    { id:'b', color:'azure', n:15, title:'Inflammatory-predominant subtype',
       desc:'Elevated fecal calprotectin and CRP with frequent wearable-detected symptom flares. Organoids show high inflammatory cytokine output, partial response to Treatment Y (anti-TNF).' },
-    { id:'c', color:'coral', n:5, title:'Indolent / low-fibrosis subtype',
+    { id:'c', color:'coral', n:13, title:'Indolent / low-fibrosis subtype',
       desc:'Stable disease course with no major fibrosis-associated risk variants; organoids show baseline matrix stiffness and minimal fibrotic response — candidates for maintenance therapy alone.' },
-    { id:'u', color:'grey',  n:5, title:'Unclassified',
+    { id:'u', color:'grey',  n:12, title:'Unclassified',
       desc:'Not enough uploaded data yet to confidently assign a subtype. Awaiting additional blood/genetic/wearable uploads.' },
   ],
   'uf-cohort': [
-    { id:'a', color:'sage',  n:17, title:'MED12-mutant subtype',
+    { id:'a', color:'sage',  n:27, title:'MED12-mutant subtype',
       desc:'MED12 exon 2 mutations, often with a family history of early-onset fibroids. Organoids show strong growth suppression in response to Treatment X (selective progesterone receptor modulator).' },
-    { id:'b', color:'azure', n:13, title:'HMGA2-driven subtype',
+    { id:'b', color:'azure', n:21, title:'HMGA2-driven subtype',
       desc:'HMGA2 rearrangements with larger tumor volume on imaging and elevated inflammatory signals on wearable data. Organoids show partial response to Treatment Y (GnRH antagonist).' },
-    { id:'c', color:'coral', n:11, title:'Low-response subtype',
+    { id:'c', color:'coral', n:18, title:'Low-response subtype',
       desc:'No MED12/HMGA2 driver identified on sequencing; organoids show minimal response across the drug panel — candidates for combination or surgical management.' },
-    { id:'u', color:'grey',  n:9,  title:'Unclassified',
+    { id:'u', color:'grey',  n:14,  title:'Unclassified',
       desc:'Not enough uploaded data yet to confidently assign a subtype. Awaiting additional blood/genetic/wearable uploads.' },
   ],
   'glp1-obesity': [
-    { id:'a', color:'sage',  n:5, title:'Strong GLP-1 responder subtype',
+    { id:'a', color:'sage',  n:18, title:'Strong GLP-1 responder subtype',
       desc:'Family history of Type 2 Diabetes, TCF7L2/PPARG risk variants. Organoids show strong response to Treatment X (GLP‑1 analog).' },
-    { id:'b', color:'azure', n:3, title:'Inflammatory / weight-regain subtype',
+    { id:'b', color:'azure', n:11, title:'Inflammatory / weight-regain subtype',
       desc:'Elevated hs-CRP and reduced heart-rate variability on wearable data. Organoids show inflammatory pathway activation, partial response to Treatment Y.' },
-    { id:'c', color:'coral', n:2, title:'Low-response subtype',
+    { id:'c', color:'coral', n:7, title:'Low-response subtype',
       desc:'No clear metabolic risk-variant signature; organoids show minimal response across the GLP-1 panel — candidates for a GLP-1/GIP dual-agonist combination.' },
-    { id:'u', color:'grey',  n:1, title:'Unclassified',
+    { id:'u', color:'grey',  n:4, title:'Unclassified',
       desc:'Not enough uploaded data yet to confidently assign a subtype. Awaiting additional blood/genetic/wearable uploads.' },
   ],
 };
