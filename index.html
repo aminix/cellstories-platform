@@ -418,21 +418,21 @@ function seedState(){
   }
   return {
     studies:[
+      { id:'ibd-fibrosis', name:'IBD Fibrosis Progression & Mechanobiology Study', prefix:'IBD', desc:"Internal translational cohort tracking multi-omic and organoid signatures — including extracellular matrix stiffness and collagen deposition — associated with fibrotic stricture progression in Crohn's disease and ulcerative colitis." },
       { id:'uf-cohort', name:'Uterine Fibroid Precision Cohort', prefix:'UF', desc:"CellStories' internal precision-medicine cohort, pairing patient-derived organoids with clinical, genetic, and wearable data to identify treatment-responsive uterine fibroid subtypes." },
-      { id:'mgh-glp1', name:'Mass General — GLP-1 Responder Study', prefix:'MGH', desc:"External pilot with Massachusetts General Hospital's metabolic health program, characterizing which obesity phenotypes respond best to GLP-1 receptor agonist therapy." },
-      { id:'ibd-fibrosis', name:'Cedars-Sinai — IBD Fibrosis Progression Study', prefix:'IBD', desc:"Collaboration with Cedars-Sinai's Inflammatory Bowel Disease Center, tracking multi-omic and organoid signatures associated with fibrotic progression in Crohn's disease and ulcerative colitis." },
+      { id:'glp1-obesity', name:'Obesity — GLP-1 Responder Study', prefix:'GLP', desc:"Internal cohort study characterizing which obesity phenotypes respond best to GLP-1 receptor agonist therapy, pairing metabolic, genetic, and wearable data with organoid drug-response assays." },
     ],
     participants:{
-      'uf-cohort': makeParticipants('UF', 50, '2026-07-20'),
-      'mgh-glp1': makeParticipants('MGH', 11, '2026-07-18'),
       'ibd-fibrosis': makeParticipants('IBD', 24, '2026-07-15'),
+      'uf-cohort': makeParticipants('UF', 50, '2026-07-20'),
+      'glp1-obesity': makeParticipants('GLP', 11, '2026-07-18'),
     },
     cohortRun:{},
     reportGenerated:{}
   };
 }
 
-const STORE_KEY = 'cshub_prototype_v3';
+const STORE_KEY = 'cshub_prototype_v4';
 let state;
 try{
   const raw = localStorage.getItem(STORE_KEY);
@@ -832,6 +832,16 @@ function sparkline(values, color){
 
 /* ---------------- Cohort Analysis Page ---------------- */
 const STUDY_GROUPS = {
+  'ibd-fibrosis': [
+    { id:'a', color:'sage',  n:8, title:'Fibrostenotic subtype',
+      desc:'NOD2/ATG16L1 risk variants with a history of stricturing disease. Organoids show elevated collagen deposition and increased extracellular matrix stiffness, with strong response to Treatment X (anti-fibrotic agent).' },
+    { id:'b', color:'azure', n:6, title:'Inflammatory-predominant subtype',
+      desc:'Elevated fecal calprotectin and CRP with frequent wearable-detected symptom flares. Organoids show high inflammatory cytokine output, partial response to Treatment Y (anti-TNF).' },
+    { id:'c', color:'coral', n:5, title:'Indolent / low-fibrosis subtype',
+      desc:'Stable disease course with no major fibrosis-associated risk variants; organoids show baseline matrix stiffness and minimal fibrotic response — candidates for maintenance therapy alone.' },
+    { id:'u', color:'grey',  n:5, title:'Unclassified',
+      desc:'Not enough uploaded data yet to confidently assign a subtype. Awaiting additional blood/genetic/wearable uploads.' },
+  ],
   'uf-cohort': [
     { id:'a', color:'sage',  n:17, title:'MED12-mutant subtype',
       desc:'MED12 exon 2 mutations, often with a family history of early-onset fibroids. Organoids show strong growth suppression in response to Treatment X (selective progesterone receptor modulator).' },
@@ -842,7 +852,7 @@ const STUDY_GROUPS = {
     { id:'u', color:'grey',  n:9,  title:'Unclassified',
       desc:'Not enough uploaded data yet to confidently assign a subtype. Awaiting additional blood/genetic/wearable uploads.' },
   ],
-  'mgh-glp1': [
+  'glp1-obesity': [
     { id:'a', color:'sage',  n:5, title:'Strong GLP-1 responder subtype',
       desc:'Family history of Type 2 Diabetes, TCF7L2/PPARG risk variants. Organoids show strong response to Treatment X (GLP‑1 analog).' },
     { id:'b', color:'azure', n:3, title:'Inflammatory / weight-regain subtype',
@@ -850,16 +860,6 @@ const STUDY_GROUPS = {
     { id:'c', color:'coral', n:2, title:'Low-response subtype',
       desc:'No clear metabolic risk-variant signature; organoids show minimal response across the GLP-1 panel — candidates for a GLP-1/GIP dual-agonist combination.' },
     { id:'u', color:'grey',  n:1, title:'Unclassified',
-      desc:'Not enough uploaded data yet to confidently assign a subtype. Awaiting additional blood/genetic/wearable uploads.' },
-  ],
-  'ibd-fibrosis': [
-    { id:'a', color:'sage',  n:8, title:'Fibrostenotic subtype',
-      desc:'NOD2/ATG16L1 risk variants with a history of stricturing disease. Organoids show elevated collagen deposition and strong response to Treatment X (anti-fibrotic agent).' },
-    { id:'b', color:'azure', n:6, title:'Inflammatory-predominant subtype',
-      desc:'Elevated fecal calprotectin and CRP with frequent wearable-detected symptom flares. Organoids show high inflammatory cytokine output, partial response to Treatment Y (anti-TNF).' },
-    { id:'c', color:'coral', n:5, title:'Indolent / low-fibrosis subtype',
-      desc:'Stable disease course with no major fibrosis-associated risk variants; organoids show minimal fibrotic response — candidates for maintenance therapy alone.' },
-    { id:'u', color:'grey',  n:5, title:'Unclassified',
       desc:'Not enough uploaded data yet to confidently assign a subtype. Awaiting additional blood/genetic/wearable uploads.' },
   ],
 };
