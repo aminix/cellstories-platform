@@ -874,10 +874,17 @@ function groupsFor(study){ return STUDY_GROUPS[study.id] || DEFAULT_GROUPS; }
 
 function buildClusterDots(groups, seed){
   const rnd = seedRandom(seed);
-  const centers = { a:[150,150], b:[380,120], c:[300,260], u:[470,250] };
+  const centers = { a:[150,150], b:[380,120], c:[300,260] };
+  const plotW = 560, plotH = 340, pad = 30;
   const dots = [];
   groups.forEach(g=>{
     for(let i=0;i<g.n;i++){
+      if(g.id==='u'){
+        // Outliers: scattered across the plot rather than clustered — these
+        // are the participants real pattern-detection can't confidently place.
+        dots.push({ group:g.id, x: pad+rnd()*(plotW-2*pad), y: pad+rnd()*(plotH-2*pad) });
+        continue;
+      }
       const [cx,cy] = centers[g.id];
       const ang = rnd()*Math.PI*2, rad = rnd()*46;
       dots.push({ group:g.id, x:cx+Math.cos(ang)*rad, y:cy+Math.sin(ang)*rad });
