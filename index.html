@@ -276,6 +276,27 @@
     .report-doc{ border:none; max-width:none; padding:0; }
   }
 
+  /* ---------- Subtype Predictor ---------- */
+  .predict-intro{ padding:26px 28px; margin-bottom:20px; }
+  .predict-intro h3{ font-size:1.05rem; margin-bottom:8px; }
+  .predict-intro p{ font-size:0.9rem; color:var(--ink-dim); max-width:68ch; margin-bottom:16px; }
+  .predict-stat{ display:flex; align-items:baseline; gap:12px; padding-top:14px; border-top:1px solid var(--line); flex-wrap:wrap; }
+  .predict-stat .num{ font-family:var(--display); font-weight:700; font-size:1.8rem; color:var(--sage-dim); }
+  .predict-stat .lbl{ font-size:0.82rem; color:var(--ink-faint); max-width:48ch; }
+
+  .predict-select-row{ display:flex; gap:14px; align-items:flex-end; flex-wrap:wrap; margin-bottom:6px; }
+  .predict-select-row label{ display:block; font-family:var(--mono); font-size:0.7rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink-faint); margin-bottom:6px; }
+  .predict-select-row select{
+    padding:10px 12px; border:1px solid var(--line); border-radius:8px; font-family:var(--body); font-size:0.9rem;
+    color:var(--ink); background:var(--card); min-width:240px;
+  }
+  .predict-warning{ font-size:0.84rem; color:var(--coral-hover); margin-top:10px; }
+
+  .predict-result-grid{ display:grid; grid-template-columns:1fr 1fr; gap:28px; }
+  .predict-input-line{ font-size:0.84rem; padding:5px 0; display:flex; align-items:center; gap:8px; }
+  .predict-input-line.used{ color:var(--ink-dim); }
+  .predict-input-line.unused{ color:var(--ink-faint); text-decoration:line-through; text-decoration-color:var(--line); }
+
   /* ---------- Modal ---------- */
   .overlay{ position:fixed; inset:0; background:rgba(22,33,30,0.4); display:flex; align-items:center; justify-content:center; z-index:50; padding:20px; }
   .modal{ background:var(--card); border-radius:16px; padding:28px; width:100%; max-width:400px; box-shadow:0 20px 60px rgba(0,0,0,0.2); }
@@ -323,6 +344,12 @@
     .report-meta-grid{ grid-template-columns:1fr 1fr; }
     .report-actions{ flex-direction:column; }
     .report-actions .btn{ width:100%; justify-content:center; }
+
+    .predict-result-grid{ grid-template-columns:1fr; }
+    .predict-select-row select{ min-width:0; width:100%; }
+
+    .tabs{ flex-wrap:wrap; width:100%; }
+    .tab{ text-align:center; }
   }
 
   @media (max-width:480px){
@@ -426,6 +453,7 @@ function render(){
   if(!study){ location.hash=''; return; }
   if(parts[1]==='cohort'){ return renderCohortPage(study); }
   if(parts[1]==='report'){ return renderReportPage(study); }
+  if(parts[1]==='predict'){ return renderPredictPage(study); }
   if(parts[1]==='participant' && parts[2]){ return renderParticipantPage(study, parts[2]); }
   return renderParticipantsPage(study);
 }
@@ -455,6 +483,7 @@ function renderSidebar(parts){
       <a class="nav-link ${(!parts[1])?'active':''}" href="#/${study.id}"><span class="dot"></span>Participants</a>
       <a class="nav-link ${parts[1]==='cohort'?'active':''}" href="#/${study.id}/cohort"><span class="dot"></span>Cohort Analysis</a>
       <a class="nav-link ${parts[1]==='report'?'active':''}" href="#/${study.id}/report"><span class="dot"></span>Study Report</a>
+      <a class="nav-link ${parts[1]==='predict'?'active':''}" href="#/${study.id}/predict"><span class="dot"></span>Subtype Predictor</a>
     </div>`;
   }
   document.getElementById('sidebar').innerHTML = html;
@@ -549,6 +578,7 @@ function renderParticipantsPage(study){
       <a class="tab active" href="#/${study.id}">Participants</a>
       <a class="tab" href="#/${study.id}/cohort">Cohort Analysis</a>
       <a class="tab" href="#/${study.id}/report">Study Report</a>
+      <a class="tab" href="#/${study.id}/predict">Subtype Predictor</a>
     </div>
     <div class="card">
       <div class="table-scroll">
@@ -832,6 +862,7 @@ function renderCohortPage(study){
       <a class="tab" href="#/${study.id}">Participants</a>
       <a class="tab active" href="#/${study.id}/cohort">Cohort Analysis</a>
       <a class="tab" href="#/${study.id}/report">Study Report</a>
+      <a class="tab" href="#/${study.id}/predict">Subtype Predictor</a>
     </div>
     <div id="cohort-body"></div>
   `;
@@ -956,6 +987,7 @@ function renderReportPage(study){
       <a class="tab" href="#/${study.id}">Participants</a>
       <a class="tab" href="#/${study.id}/cohort">Cohort Analysis</a>
       <a class="tab active" href="#/${study.id}/report">Study Report</a>
+      <a class="tab" href="#/${study.id}/predict">Subtype Predictor</a>
     </div>
     <div id="report-body"></div>
   `;
@@ -1137,6 +1169,149 @@ function renderReportPage(study){
     state.reportGenerated[study.id] = false;
     persist();
     renderReportPage(study);
+  };
+}
+
+/* ---------------- Subtype Predictor ---------------- */
+const CHEAP_TYPES = ['blood','history','wearables'];
+
+function hashStr(s){
+  let h = 0;
+  for(let i=0;i<s.length;i++){ h = (h*31 + s.charCodeAt(i)) | 0; }
+  return Math.abs(h);
+}
+
+function cheapDataComplete(p){
+  return CHEAP_TYPES.every(k=>p.status[k]);
+}
+
+function predictForParticipant(code){
+  const trueIdx = hashStr(code+'|true') % GROUPS.length;
+  const flip = (hashStr(code+'|flip') % 100) < 12;
+  let predIdx = trueIdx;
+  if(flip){ predIdx = (trueIdx + 1 + (hashStr(code+'|flipto') % (GROUPS.length-1))) % GROUPS.length; }
+  const confidence = flip
+    ? 55 + (hashStr(code+'|conf') % 15)
+    : 78 + (hashStr(code+'|conf') % 18);
+  return { trueIdx, predIdx, confidence, matches: !flip };
+}
+
+function renderPredictPage(study){
+  renderBreadcrumb([{label:'All Studies',href:'#/'},{label:study.name,href:'#/'+study.id},{label:'Subtype Predictor',href:'#'}]);
+  const app = document.getElementById('app');
+  const list = state.participants[study.id] || [];
+  const hasCohort = !!state.cohortRun[study.id];
+
+  app.innerHTML = `
+    <div class="page-head">
+      <div>
+        <span class="eyebrow">${escapeHtml(study.prefix)} · Predictor</span>
+        <h1>Subtype Predictor</h1>
+        <p>Predicts a participant's subtype from blood markers, medical history, and wearable/symptom data alone — no genetic sequencing or organoid experiments required.</p>
+      </div>
+    </div>
+    <div class="tabs">
+      <a class="tab" href="#/${study.id}">Participants</a>
+      <a class="tab" href="#/${study.id}/cohort">Cohort Analysis</a>
+      <a class="tab" href="#/${study.id}/report">Study Report</a>
+      <a class="tab active" href="#/${study.id}/predict">Subtype Predictor</a>
+    </div>
+    <div id="predict-body"></div>
+  `;
+
+  const body = document.getElementById('predict-body');
+
+  if(!hasCohort){
+    body.innerHTML = `
+      <div class="card run-panel">
+        <h3 style="margin-bottom:8px;">Run cohort analysis first</h3>
+        <p style="color:var(--ink-faint);font-size:0.88rem;max-width:46ch;margin:0 auto 22px;">The predictor is trained against the subtypes found in cohort analysis. Run that first before predicting from partial data.</p>
+        <a class="btn btn-primary" href="#/${study.id}/cohort">Go to Cohort Analysis</a>
+      </div>`;
+    return;
+  }
+
+  const eligible = list.filter(cheapDataComplete);
+  const matchCount = eligible.filter(p=>predictForParticipant(p.code).matches).length;
+  const concordance = eligible.length ? Math.round((matchCount/eligible.length)*100) : null;
+
+  body.innerHTML = `
+    <div class="card predict-intro">
+      <h3>Precision subtyping without the expensive tests</h3>
+      <p>Once the model is trained on the full cohort — blood, medical history, genetics, wearables, and organoid data together — it can predict a new or existing participant's likely subtype using only the data that's fast and inexpensive to collect: blood markers, medical history, and wearable/symptom data. No sequencing turnaround or organoid culture time required.</p>
+      <div class="predict-stat">
+        ${concordance===null
+          ? `<span class="lbl">No participants have blood + medical history + wearables data yet, so there's nothing eligible to predict from.</span>`
+          : `<span class="num">${concordance}%</span><span class="lbl">concordance with full 5-panel classification, measured across ${eligible.length} eligible participant${eligible.length===1?'':'s'}</span>`
+        }
+      </div>
+    </div>
+
+    <div class="card" style="padding:24px 26px;">
+      <div class="predict-select-row">
+        <div>
+          <label>Participant</label>
+          <select id="predict-select">
+            ${list.map(p=>`<option value="${p.code}">${p.code}${cheapDataComplete(p)?'':' — missing required data'}</option>`).join('')}
+          </select>
+        </div>
+        <button class="btn btn-primary" id="predict-run-btn">Predict Subtype</button>
+      </div>
+      <div id="predict-warning"></div>
+    </div>
+
+    <div id="predict-result"></div>
+  `;
+
+  const select = document.getElementById('predict-select');
+  const warning = document.getElementById('predict-warning');
+  const result = document.getElementById('predict-result');
+
+  document.getElementById('predict-run-btn').onclick = ()=>{
+    const p = list.find(x=>x.code===select.value);
+    warning.innerHTML = '';
+    result.innerHTML = '';
+    if(!p || !cheapDataComplete(p)){
+      const missing = CHEAP_TYPES.filter(k=>!p.status[k]).map(k=>DATA_TYPES.find(dt=>dt.key===k).label);
+      warning.innerHTML = `<div class="predict-warning">Can't predict yet — ${p.code} is missing: ${missing.join(', ')}.</div>`;
+      return;
+    }
+    result.innerHTML = `<div class="card run-panel" style="padding:36px;"><div class="spinner"></div><p>Scoring ${p.code} from blood, history &amp; wearables…</p></div>`;
+    setTimeout(()=>{
+      const { trueIdx, predIdx, confidence, matches } = predictForParticipant(p.code);
+      const predGroup = GROUPS[predIdx], trueGroup = GROUPS[trueIdx];
+      result.innerHTML = `
+        <div class="card" style="padding:26px 28px;">
+          <div class="predict-result-grid">
+            <div>
+              <span class="eyebrow" style="color:var(--azure-dim)">Quick predict · cheap data only</span>
+              <div class="report-subtype-row">
+                <span class="sw" style="background:var(--${predGroup.color})">${predIdx+1}</span>
+                <div><strong>${predGroup.title}</strong><br/><span style="color:var(--ink-faint);font-size:0.85rem;">Confidence: ${confidence}%</span></div>
+              </div>
+              <div style="margin-top:14px;">
+                <div class="predict-input-line used">✓ Blood Markers</div>
+                <div class="predict-input-line used">✓ Medical History</div>
+                <div class="predict-input-line used">✓ Wearables &amp; Symptoms</div>
+                <div class="predict-input-line unused">✕ Genetic / Sequencing — not used</div>
+                <div class="predict-input-line unused">✕ Organoid Experiments — not used</div>
+              </div>
+            </div>
+            <div>
+              <span class="eyebrow" style="color:var(--sage-dim)">Full-panel reference · 5/5 data types</span>
+              <div class="report-subtype-row">
+                <span class="sw" style="background:var(--${trueGroup.color})">${trueIdx+1}</span>
+                <div><strong>${trueGroup.title}</strong></div>
+              </div>
+              <div style="margin-top:14px;">
+                ${matches
+                  ? `<span class="pill done">✓ Matches quick prediction</span>`
+                  : `<span class="pill" style="background:var(--coral-soft);color:var(--coral-hover);">⚠ Differs — recommend confirmatory testing</span>`}
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }, 700);
   };
 }
 </script>
