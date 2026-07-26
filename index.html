@@ -297,6 +297,16 @@
   .predict-input-line.used{ color:var(--ink-dim); }
   .predict-input-line.unused{ color:var(--ink-faint); text-decoration:line-through; text-decoration-color:var(--line); }
 
+  .predict-donut-row{ display:flex; align-items:center; gap:28px; padding-bottom:22px; margin-bottom:22px; border-bottom:1px solid var(--line); flex-wrap:wrap; }
+  .donut-wrap{ flex-shrink:0; }
+  .donut-legend{ flex:1; min-width:220px; }
+  .donut-legend-row{ display:flex; align-items:center; gap:9px; padding:5px 0; font-size:0.86rem; color:var(--ink-dim); }
+  .donut-legend-row .sw{ width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+  .donut-legend-row .name{ flex:1; }
+  .donut-legend-row .pct{ font-family:var(--mono); font-size:0.82rem; color:var(--ink-faint); font-variant-numeric:tabular-nums; }
+  .donut-legend-row.top{ color:var(--ink); font-weight:700; }
+  .donut-legend-row.top .pct{ color:var(--ink); }
+
   /* ---------- Modal ---------- */
   .overlay{ position:fixed; inset:0; background:rgba(22,33,30,0.4); display:flex; align-items:center; justify-content:center; z-index:50; padding:20px; }
   .modal{ background:var(--card); border-radius:16px; padding:28px; width:100%; max-width:400px; box-shadow:0 20px 60px rgba(0,0,0,0.2); }
@@ -347,6 +357,8 @@
 
     .predict-result-grid{ grid-template-columns:1fr; }
     .predict-select-row select{ min-width:0; width:100%; }
+    .predict-donut-row{ justify-content:center; text-align:center; }
+    .donut-legend{ width:100%; }
 
     .tabs{ flex-wrap:wrap; width:100%; }
     .tab{ text-align:center; }
@@ -1193,7 +1205,54 @@ function predictForParticipant(code){
   const confidence = flip
     ? 55 + (hashStr(code+'|conf') % 15)
     : 78 + (hashStr(code+'|conf') % 18);
-  return { trueIdx, predIdx, confidence, matches: !flip };
+
+  const probs = new Array(GROUPS.length).fill(0);
+  probs[predIdx] = confidence;
+  let remaining = 100 - confidence;
+  const others = GROUPS.map((_,i)=>i).filter(i=>i!==predIdx);
+
+  function splitAmong(idxs, total){
+    if(idxs.length===0) return;
+    const weights = idxs.map((_,k)=>1+(hashStr(code+'|w'+k)%5));
+    const totalW = weights.reduce((a,b)=>a+b,0);
+    let used = 0;
+    idxs.forEach((i,k)=>{
+      const share = (k===idxs.length-1) ? (total-used) : Math.round(total*weights[k]/totalW);
+      used += share;
+      probs[i] += share;
+    });
+  }
+
+  if(flip){
+    const trueShare = Math.round(remaining * (0.5 + (hashStr(code+'|trueshare')%20)/100));
+    probs[trueIdx] += trueShare;
+    splitAmong(others.filter(i=>i!==trueIdx), remaining-trueShare);
+  } else {
+    splitAmong(others, remaining);
+  }
+
+  return { trueIdx, predIdx, confidence, matches: !flip, probs };
+}
+
+function renderDonut(probs, highlightIdx){
+  const size = 132, stroke = 18;
+  const r = (size-stroke)/2, cx = size/2, cy = size/2;
+  const circ = 2*Math.PI*r;
+  let cumulative = 0;
+  const arcs = GROUPS.map((g,i)=>{
+    const pct = probs[i];
+    const dash = (pct/100)*circ;
+    const offset = -(cumulative/100)*circ;
+    cumulative += pct;
+    return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--${g.color})" stroke-width="${stroke}"
+      stroke-dasharray="${dash.toFixed(1)} ${(circ-dash).toFixed(1)}" stroke-dashoffset="${offset.toFixed(1)}"
+      transform="rotate(-90 ${cx} ${cy})" opacity="${i===highlightIdx?1:0.55}"/>`;
+  }).join('');
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+    ${arcs}
+    <text x="${cx}" y="${cy-3}" text-anchor="middle" font-family="var(--display)" font-weight="700" font-size="22" fill="var(--ink)">${probs[highlightIdx]}%</text>
+    <text x="${cx}" y="${cy+15}" text-anchor="middle" font-family="var(--mono)" font-size="8.5" letter-spacing="0.03em" fill="var(--ink-faint)">CONFIDENCE</text>
+  </svg>`;
 }
 
 function renderPredictPage(study){
@@ -1278,10 +1337,25 @@ function renderPredictPage(study){
     }
     result.innerHTML = `<div class="card run-panel" style="padding:36px;"><div class="spinner"></div><p>Scoring ${p.code} from blood, history &amp; wearables…</p></div>`;
     setTimeout(()=>{
-      const { trueIdx, predIdx, confidence, matches } = predictForParticipant(p.code);
+      const { trueIdx, predIdx, confidence, matches, probs } = predictForParticipant(p.code);
       const predGroup = GROUPS[predIdx], trueGroup = GROUPS[trueIdx];
+      const ranked = GROUPS.map((g,i)=>i).sort((a,b)=>probs[b]-probs[a]);
       result.innerHTML = `
         <div class="card" style="padding:26px 28px;">
+          <div class="predict-donut-row">
+            <div class="donut-wrap">${renderDonut(probs, predIdx)}</div>
+            <div class="donut-legend">
+              <span class="eyebrow" style="color:var(--azure-dim);display:block;margin-bottom:8px;">Subtype probability breakdown</span>
+              ${ranked.map(i=>{
+                const g = GROUPS[i];
+                return `<div class="donut-legend-row ${i===predIdx?'top':''}">
+                  <span class="sw" style="background:var(--${g.color})"></span>
+                  <span class="name">${g.title}</span>
+                  <span class="pct">${probs[i]}%</span>
+                </div>`;
+              }).join('')}
+            </div>
+          </div>
           <div class="predict-result-grid">
             <div>
               <span class="eyebrow" style="color:var(--azure-dim)">Quick predict · cheap data only</span>
