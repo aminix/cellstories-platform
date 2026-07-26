@@ -86,6 +86,12 @@
   .nav-link.active{ background:rgba(86,183,126,0.16); color:#7FD9A3; font-weight:600; }
   .nav-link .dot{ width:6px; height:6px; border-radius:50%; background:currentColor; opacity:0.6; flex-shrink:0; }
 
+  .sidebar-footer{ margin-top:auto; padding-top:16px; border-top:1px solid rgba(251,251,251,0.1); display:flex; flex-direction:column; gap:12px; }
+  .sidebar-security{ display:flex; align-items:flex-start; gap:7px; font-size:0.72rem; color:rgba(251,251,251,0.42); line-height:1.4; padding:0 10px; }
+  .sidebar-security .icon{ margin-top:1px; }
+  .sidebar-signout{ background:none; border:none; text-align:left; padding:6px 10px; font-size:0.84rem; color:rgba(251,251,251,0.6); font-family:inherit; border-radius:8px; }
+  .sidebar-signout:hover{ color:#fff; background:rgba(251,251,251,0.07); }
+
   .main{ flex:1; min-width:0; }
   .topbar{
     display:flex; align-items:center; justify-content:space-between; padding:18px 40px;
@@ -121,6 +127,13 @@
   /* ---------- Cards / table ---------- */
   .card{ background:var(--card); border:1px solid var(--line); border-radius:14px; }
   .card-pad{ padding:24px 26px; }
+
+  .kpi-row{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:28px; }
+  .kpi-tile{ background:var(--card); border:1px solid var(--line); border-radius:14px; padding:20px; display:flex; align-items:center; gap:14px; }
+  .kpi-icon{ width:42px; height:42px; border-radius:11px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .kpi-icon .icon{ width:21px; height:21px; }
+  .kpi-num{ font-family:var(--display); font-weight:700; font-size:1.5rem; color:var(--ink); line-height:1.15; }
+  .kpi-lbl{ font-size:0.76rem; color:var(--ink-faint); margin-top:2px; }
 
   .study-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:16px; }
   .study-card{ padding:22px; display:flex; flex-direction:column; gap:14px; transition:border-color .15s; }
@@ -160,7 +173,20 @@
   .completion.complete .completion-fill{ background:var(--coral); }
   .completion.complete .completion-pct{ color:var(--coral-hover); }
 
-  .table-toolbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+  .table-toolbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; gap:14px; flex-wrap:wrap; }
+  .p-search-wrap{ position:relative; flex:1; min-width:180px; max-width:280px; }
+  .p-search-wrap .icon{ position:absolute; left:11px; top:50%; transform:translateY(-50%); color:var(--ink-faint); margin:0; }
+  .p-search-wrap input{
+    width:100%; padding:9px 12px 9px 34px; border:1px solid var(--line); border-radius:8px; font-size:0.86rem;
+    font-family:var(--body); color:var(--ink); background:var(--card);
+  }
+  .p-search-wrap input:focus{ outline:none; border-color:var(--sage); }
+  .p-toolbar-right{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .p-toolbar-right select{
+    padding:8px 10px; border:1px solid var(--line); border-radius:8px; font-size:0.82rem;
+    font-family:var(--body); color:var(--ink); background:var(--card);
+  }
+  .p-count{ font-size:0.78rem; color:var(--ink-faint); font-family:var(--mono); white-space:nowrap; }
   .tabs{ display:flex; gap:4px; background:var(--bg); padding:4px; border-radius:10px; width:fit-content; margin-bottom:24px; }
   .tab{ padding:8px 16px; border-radius:8px; font-size:0.86rem; font-weight:600; color:var(--ink-faint); }
   .tab.active{ background:var(--card); color:var(--ink); box-shadow:0 1px 2px rgba(20,30,25,0.06); }
@@ -207,6 +233,12 @@
   .img-tile{ aspect-ratio:1; border-radius:10px; display:flex; align-items:end; padding:8px; font-size:0.68rem; color:#fff; font-weight:600; background-size:cover; }
   .bar-cell{ position:relative; height:18px; background:var(--grey-soft); border-radius:4px; overflow:hidden; width:100px; }
   .bar-fill{ position:absolute; left:0; top:0; bottom:0; border-radius:4px; }
+
+  .heatmap-wrap{ overflow-x:auto; }
+  .heatmap{ border-collapse:separate; border-spacing:4px; }
+  .heatmap th{ font-family:var(--mono); font-size:0.66rem; text-transform:uppercase; letter-spacing:0.03em; color:var(--ink-faint); font-weight:500; padding:4px 8px; text-align:center; border:none; white-space:nowrap; }
+  .heatmap .heat-row-label{ text-align:right; font-family:var(--body); font-size:0.82rem; color:var(--ink); font-weight:600; text-transform:none; letter-spacing:0; padding-right:12px; }
+  .heat-cell{ text-align:center; font-family:var(--mono); font-size:0.76rem; font-weight:600; padding:11px 14px; border-radius:6px; white-space:nowrap; }
 
   .empty-state{ text-align:center; padding:22px 10px; }
   .empty-state p{ font-size:0.84rem; color:var(--ink-faint); margin-bottom:14px; }
@@ -307,6 +339,22 @@
   .donut-legend-row.top{ color:var(--ink); font-weight:700; }
   .donut-legend-row.top .pct{ color:var(--ink); }
 
+  /* ---------- Login ---------- */
+  .login-screen{ min-height:100vh; background:var(--dark); display:flex; align-items:center; justify-content:center; padding:20px; }
+  .login-card{ background:var(--card); border-radius:16px; padding:40px 36px; max-width:380px; width:100%; box-shadow:0 24px 70px rgba(0,0,0,0.35); }
+  .login-brand{ display:flex; align-items:center; gap:10px; margin-bottom:28px; }
+  .login-brand .mark{ width:26px; height:26px; flex-shrink:0; }
+  .login-brand span{ font-family:var(--display); font-weight:700; font-size:1.02rem; color:var(--ink); }
+  .login-card h1{ font-size:1.3rem; margin-bottom:6px; }
+  .login-sub{ font-size:0.88rem; color:var(--ink-faint); margin-bottom:24px; }
+  .login-card label{ display:block; font-family:var(--mono); font-size:0.7rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink-faint); margin-bottom:6px; }
+  .login-card input{
+    width:100%; padding:11px 13px; border:1px solid var(--line); border-radius:8px; font-size:0.9rem;
+    font-family:var(--body); color:var(--ink); margin-bottom:16px; background:var(--bg);
+  }
+  .login-card input:focus{ outline:none; border-color:var(--sage); }
+  .login-note{ text-align:center; font-size:0.78rem; color:var(--ink-faint); margin-top:16px; }
+
   /* ---------- Modal ---------- */
   .overlay{ position:fixed; inset:0; background:rgba(22,33,30,0.4); display:flex; align-items:center; justify-content:center; z-index:50; padding:20px; }
   .modal{ background:var(--card); border-radius:16px; padding:28px; width:100%; max-width:400px; box-shadow:0 20px 60px rgba(0,0,0,0.2); }
@@ -326,6 +374,13 @@
     opacity:0; pointer-events:none; transition:opacity .2s, transform .2s; z-index:100;
   }
   .toast.show{ opacity:1; transform:translateX(-50%) translateY(-6px); }
+
+  .icon{ width:15px; height:15px; flex-shrink:0; vertical-align:-3px; }
+  th .icon{ margin-right:4px; }
+  .data-icon .icon{ width:19px; height:19px; }
+  .file-line .icon{ width:14px; height:14px; margin-right:2px; }
+  .report-draft-banner .icon{ width:14px; height:14px; margin-right:2px; }
+  .pill .icon{ width:12px; height:12px; margin-right:1px; }
 
   /* ---------- Mobile / phone ---------- */
   @media (max-width:760px){
@@ -362,17 +417,42 @@
 
     .tabs{ flex-wrap:wrap; width:100%; }
     .tab{ text-align:center; }
+
+    .kpi-row{ grid-template-columns:1fr 1fr; }
+    .sidebar-footer{ width:100%; margin-top:4px; padding-top:12px; }
   }
 
   @media (max-width:480px){
     .study-grid{ grid-template-columns:1fr; }
+    .kpi-row{ grid-template-columns:1fr; }
     .img-gallery{ grid-template-columns:repeat(2, 1fr); }
   }
 </style>
 </head>
 <body>
 
-<div class="shell">
+<div class="login-screen" id="login-screen">
+  <form class="login-card" id="login-form">
+    <div class="login-brand">
+      <svg class="mark" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="11" stroke="#FBFBFB" stroke-width="1.1"/>
+        <circle cx="9" cy="10" r="3.4" fill="#56B77E"/>
+        <circle cx="15" cy="15" r="2.2" fill="#F2735B"/>
+      </svg>
+      <span>CellStories Platform</span>
+    </div>
+    <h1>Sign in to continue</h1>
+    <p class="login-sub">Access your studies, cohort analyses, and reports.</p>
+    <label>Email</label>
+    <input type="email" id="login-email" placeholder="you@cellstories.bio" required />
+    <label>Password</label>
+    <input type="password" id="login-password" placeholder="••••••••" required />
+    <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:6px;">Sign In</button>
+    <p class="login-note">Demo access — any email and password will do.</p>
+  </form>
+</div>
+
+<div class="shell" id="shell" style="display:none;">
   <aside class="sidebar" id="sidebar"></aside>
   <div class="main">
     <div class="topbar">
@@ -392,12 +472,31 @@
    ========================================================= */
 
 const DATA_TYPES = [
-  { key:'blood',     label:'Blood Markers',            icon:'🩸', color:'coral' },
-  { key:'history',   label:'Medical History',          icon:'📋', color:'azure' },
-  { key:'genetics',  label:'Genetic / Sequencing',     icon:'🧬', color:'sage'  },
-  { key:'wearables', label:'Wearables & Symptoms',     icon:'⌚', color:'azure' },
-  { key:'organoid',  label:'Organoid Experiments',     icon:'🧫', color:'sage'  },
+  { key:'blood',     label:'Blood Markers',            color:'coral' },
+  { key:'history',   label:'Medical History',          color:'azure' },
+  { key:'genetics',  label:'Genetic / Sequencing',     color:'sage'  },
+  { key:'wearables', label:'Wearables & Symptoms',     color:'azure' },
+  { key:'organoid',  label:'Organoid Experiments',     color:'sage'  },
 ];
+
+const ICON_PATHS = {
+  blood:     '<path d="M12 3s7 7.6 7 12.2A7 7 0 1 1 5 15.2C5 10.6 12 3 12 3Z"/>',
+  history:   '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3.5A1.5 1.5 0 0 1 10.5 2h3A1.5 1.5 0 0 1 15 3.5V4"/><path d="M8.2 10.5h7.6M8.2 14h7.6M8.2 17.5h5"/>',
+  genetics:  '<path d="M7.5 3c0 6 9 6 9 12s-9 6-9 12"/><path d="M16.5 3c0 6-9 6-9 12s9 6 9 12"/><path d="M8 7.3h8M8 12h8M8 16.7h8"/>',
+  wearables: '<rect x="6.5" y="6.5" width="11" height="11" rx="3.2"/><path d="M9 6.5V4.3A1.3 1.3 0 0 1 10.3 3h3.4A1.3 1.3 0 0 1 15 4.3V6.5M9 17.5v2.2A1.3 1.3 0 0 0 10.3 21h3.4a1.3 1.3 0 0 0 1.3-1.3v-2.2"/>',
+  organoid:  '<path d="M9.3 3h5.4M10.2 3v6.4L4.9 19.6A2 2 0 0 0 6.7 22.6h10.6a2 2 0 0 0 1.8-2.9L13.8 9.4V3"/><path d="M7.6 15.2h8.8"/>',
+  file:      '<path d="M7 3h7l4 4v13.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 6 20.5V4.5A1.5 1.5 0 0 1 7 3Z"/><path d="M14 3v4h4"/>',
+  folder:    '<path d="M4 7a2 2 0 0 1 2-2h4l2 2h6a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7Z"/>',
+  target:    '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="0.7" fill="currentColor" stroke="none"/>',
+  warning:   '<path d="M12 3.5 21.5 20h-19Z"/><path d="M12 9.5v5M12 17.3h.01"/>',
+  lock:      '<rect x="5" y="10.5" width="14" height="9.5" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/>',
+  search:    '<circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.4-4.4"/>',
+  chart:     '<path d="M4 20V10M11 20V4M18 20v-7"/>',
+  users:     '<circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.6 2.8-6 6-6s6 2.4 6 6"/><circle cx="17.5" cy="9" r="2.6"/><path d="M15.5 14c2.4.3 4.5 2.3 5 6"/>',
+};
+function icon(name, cls){
+  return `<svg class="icon ${cls||''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${ICON_PATHS[name]||''}</svg>`;
+}
 
 function seedRandom(seed){
   return function(){ seed = (seed*1103515245+12345) & 0x7fffffff; return seed/0x7fffffff; };
@@ -457,7 +556,28 @@ function parseHash(){
   return parts;
 }
 window.addEventListener('hashchange', render);
-window.addEventListener('DOMContentLoaded', render);
+window.addEventListener('DOMContentLoaded', initAuth);
+
+function initAuth(){
+  const authed = sessionStorage.getItem('cshub_authed') === '1';
+  if(authed){ showApp(); return; }
+  document.getElementById('login-form').addEventListener('submit', e=>{
+    e.preventDefault();
+    sessionStorage.setItem('cshub_authed', '1');
+    showApp();
+  });
+}
+function showApp(){
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('shell').style.display = 'flex';
+  render();
+}
+function signOut(){
+  sessionStorage.removeItem('cshub_authed');
+  document.getElementById('shell').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  location.hash = '';
+}
 
 function render(){
   const parts = parseHash();
@@ -501,6 +621,11 @@ function renderSidebar(parts){
       <a class="nav-link ${parts[1]==='predict'?'active':''}" href="#/${study.id}/predict"><span class="dot"></span>Subtype Predictor</a>
     </div>`;
   }
+  html += `
+    <div class="sidebar-footer">
+      <div class="sidebar-security">${icon('lock')}<span>Built for HIPAA &amp; SOC 2–aligned data handling</span></div>
+      <button class="sidebar-signout" onclick="signOut()">Sign out</button>
+    </div>`;
   document.getElementById('sidebar').innerHTML = html;
 }
 
@@ -517,14 +642,44 @@ function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<
 function renderStudiesPage(){
   renderBreadcrumb([{label:'All Studies', href:'#/'}]);
   const app = document.getElementById('app');
+
+  const totalParticipants = state.studies.reduce((sum,s)=> sum + (state.participants[s.id]||[]).length, 0);
+  let doneSum=0, slotCount=0;
+  state.studies.forEach(s=>{
+    (state.participants[s.id]||[]).forEach(p=>{
+      doneSum += Object.values(p.status).filter(Boolean).length;
+      slotCount += DATA_TYPES.length;
+    });
+  });
+  const avgCompletion = slotCount ? Math.round(doneSum/slotCount*100) : 0;
+  const subtypesIdentified = state.studies.reduce((sum,s)=> sum + (state.cohortRun[s.id] ? groupsFor(s).length : 0), 0);
+
   app.innerHTML = `
     <div class="page-head">
       <div>
         <span class="eyebrow">Workspace</span>
-        <h1>Studies</h1>
-        <p>Each study keeps its own participants and its own patient-code numbering.</p>
+        <h1>Overview</h1>
+        <p>Every study keeps its own participants and its own patient-code numbering.</p>
       </div>
       <button class="btn btn-primary" id="new-study-btn">+ New Study</button>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi-tile">
+        <div class="kpi-icon" style="background:var(--azure-soft);color:var(--azure-dim)">${icon('users')}</div>
+        <div><div class="kpi-num">${totalParticipants}</div><div class="kpi-lbl">Participants across all studies</div></div>
+      </div>
+      <div class="kpi-tile">
+        <div class="kpi-icon" style="background:var(--sage-soft);color:var(--sage-dim)">${icon('folder')}</div>
+        <div><div class="kpi-num">${state.studies.length}</div><div class="kpi-lbl">Active studies</div></div>
+      </div>
+      <div class="kpi-tile">
+        <div class="kpi-icon" style="background:var(--coral-soft);color:var(--coral-hover)">${icon('chart')}</div>
+        <div><div class="kpi-num">${avgCompletion}%</div><div class="kpi-lbl">Average data completeness</div></div>
+      </div>
+      <div class="kpi-tile">
+        <div class="kpi-icon" style="background:var(--azure-soft);color:var(--azure-dim)">${icon('target')}</div>
+        <div><div class="kpi-num">${subtypesIdentified}</div><div class="kpi-lbl">Candidate subtypes identified</div></div>
+      </div>
     </div>
     <div class="study-grid">
       ${state.studies.map(s=>{
@@ -595,28 +750,75 @@ function renderParticipantsPage(study){
       <a class="tab" href="#/${study.id}/report">Study Report</a>
       <a class="tab" href="#/${study.id}/predict">Subtype Predictor</a>
     </div>
+    <div class="table-toolbar">
+      <div class="p-search-wrap">${icon('search')}<input type="text" id="p-search" placeholder="Search by code…" /></div>
+      <div class="p-toolbar-right">
+        <select id="p-filter">
+          <option value="all">All completion</option>
+          <option value="complete">Complete (5/5)</option>
+          <option value="partial">Partial</option>
+          <option value="none">No data</option>
+        </select>
+        <select id="p-sort">
+          <option value="code-asc">Sort: Code</option>
+          <option value="completion-desc">Sort: Completion (high → low)</option>
+          <option value="completion-asc">Sort: Completion (low → high)</option>
+          <option value="added-desc">Sort: Newest added</option>
+          <option value="added-asc">Sort: Oldest added</option>
+        </select>
+        <span class="p-count" id="p-count"></span>
+      </div>
+    </div>
     <div class="card">
       <div class="table-scroll">
       <table class="ptable">
         <thead><tr>
           <th>Completion</th><th>Code</th>
-          ${DATA_TYPES.map(dt=>`<th>${dt.icon} ${dt.label}</th>`).join('')}
+          ${DATA_TYPES.map(dt=>`<th>${icon(dt.key)} ${dt.label}</th>`).join('')}
           <th>Added</th>
         </tr></thead>
-        <tbody>
-          ${list.map(p=>`
-            <tr onclick="location.hash='#/${study.id}/participant/${p.code}'">
-              <td>${completionBar(p)}</td>
-              <td class="code-cell">${p.code}</td>
-              ${DATA_TYPES.map(dt=>`<td><span class="status-dot ${p.status[dt.key]?'on':'off'}"></span></td>`).join('')}
-              <td>${p.added}</td>
-            </tr>`).join('') || `<tr><td colspan="${3+DATA_TYPES.length}" style="text-align:center;color:var(--ink-faint);padding:30px;">No participants yet — add the first one.</td></tr>`}
-        </tbody>
+        <tbody id="p-tbody"></tbody>
       </table>
       </div>
     </div>
   `;
   document.getElementById('add-p-btn').onclick = ()=>openAddParticipantModal(study);
+
+  function draw(){
+    const q = document.getElementById('p-search').value.trim().toLowerCase();
+    const filter = document.getElementById('p-filter').value;
+    const sortBy = document.getElementById('p-sort').value;
+    let rows = list.filter(p=>{
+      if(q && !p.code.toLowerCase().includes(q)) return false;
+      const done = Object.values(p.status).filter(Boolean).length;
+      if(filter==='complete' && done!==DATA_TYPES.length) return false;
+      if(filter==='partial' && (done===0 || done===DATA_TYPES.length)) return false;
+      if(filter==='none' && done!==0) return false;
+      return true;
+    });
+    rows = rows.slice().sort((a,b)=>{
+      const da = Object.values(a.status).filter(Boolean).length;
+      const db = Object.values(b.status).filter(Boolean).length;
+      if(sortBy==='completion-desc') return db-da;
+      if(sortBy==='completion-asc') return da-db;
+      if(sortBy==='added-desc') return b.added.localeCompare(a.added);
+      if(sortBy==='added-asc') return a.added.localeCompare(b.added);
+      return a.code.localeCompare(b.code, undefined, {numeric:true});
+    });
+    document.getElementById('p-tbody').innerHTML = rows.map(p=>`
+      <tr onclick="location.hash='#/${study.id}/participant/${p.code}'">
+        <td>${completionBar(p)}</td>
+        <td class="code-cell">${p.code}</td>
+        ${DATA_TYPES.map(dt=>`<td><span class="status-dot ${p.status[dt.key]?'on':'off'}"></span></td>`).join('')}
+        <td>${p.added}</td>
+      </tr>`).join('') || `<tr><td colspan="${3+DATA_TYPES.length}" style="text-align:center;color:var(--ink-faint);padding:30px;">No participants match your filters.</td></tr>`;
+    document.getElementById('p-count').textContent = `${rows.length} of ${list.length}`;
+  }
+
+  document.getElementById('p-search').addEventListener('input', draw);
+  document.getElementById('p-filter').addEventListener('change', draw);
+  document.getElementById('p-sort').addEventListener('change', draw);
+  draw();
 }
 
 function completionBar(p){
@@ -686,7 +888,7 @@ function renderDataCards(study, p){
     <div class="data-card">
       <div class="data-card-head">
         <div class="left">
-          <div class="data-icon" style="background:var(--${dt.color}-soft)">${dt.icon}</div>
+          <div class="data-icon" style="background:var(--${dt.color}-soft);color:var(--${dt.color}-dim, var(--coral-hover))">${icon(dt.key)}</div>
           <div>
             <h3>${dt.label}</h3>
             <div class="sub">${dataTypeSub(dt.key)}</div>
@@ -731,7 +933,7 @@ function dataTypeSub(key){
 
 function renderDataBody(key, p){
   const fname = p.files[key] || (p.code.replace('-','').toLowerCase()+'_'+key+'.csv');
-  const fileLine = `<div class="file-line">📄 ${escapeHtml(fname)} <span style="color:var(--sage-dim)">✓ processed</span></div>`;
+  const fileLine = `<div class="file-line">${icon('file')} ${escapeHtml(fname)} <span style="color:var(--sage-dim)">✓ processed</span></div>`;
 
   if(key==='blood'){
     const rows = [
@@ -799,12 +1001,19 @@ function renderDataBody(key, p){
       </div>
     </div>
     <div class="organoid-sub">
-      <h4>RNA Sequencing — top differential genes</h4>
-      <table class="mini-table"><thead><tr><th>Gene</th><th>Fold Change</th><th></th></tr></thead>
-      <tbody>
-        ${[['INS',3.2],['GLP1R',2.6],['IL6',-2.1],['TNF',-1.8]].map(g=>`
-        <tr><td>${g[0]}</td><td>${g[1]>0?'+':''}${g[1]}×</td><td><div class="bar-cell"><div class="bar-fill" style="width:${Math.min(Math.abs(g[1])*20,100)}%;background:${g[1]>0?'var(--sage)':'var(--coral)'}"></div></div></td></tr>`).join('')}
-      </tbody></table>
+      <h4>RNA Sequencing — differential expression (log2 fold change vs. baseline)</h4>
+      ${renderHeatmap(
+        ['INS','GLP1R','IL6','TNF','COL1A1','ACTA2'],
+        ['Baseline','Day 3','Day 7','+ Treatment X'],
+        [
+          [0, 0.8, 1.6, 3.2],
+          [0, 0.5, 1.2, 2.6],
+          [0, -0.4, -1.1, -2.1],
+          [0, -0.3, -0.9, -1.8],
+          [0, 1.1, 2.0, 1.4],
+          [0, 0.6, 1.3, 0.9],
+        ]
+      )}
     </div>
     <div class="organoid-sub">
       <h4>PCR — Treatment X response</h4>
@@ -829,6 +1038,21 @@ function sparkline(values, color){
   return `<svg width="100%" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" style="display:block">
     <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
   </svg>`;
+}
+
+function renderHeatmap(genes, conditions, matrix){
+  const maxAbs = Math.max(...matrix.flat().map(Math.abs)) || 1;
+  const header = `<tr><th></th>${conditions.map(c=>`<th>${c}</th>`).join('')}</tr>`;
+  const rows = genes.map((g,ri)=>{
+    const cells = matrix[ri].map(v=>{
+      const alpha = (Math.abs(v)/maxAbs*0.82+0.08).toFixed(2);
+      const bg = v>=0 ? `rgba(242,115,91,${alpha})` : `rgba(62,155,214,${alpha})`;
+      const textColor = alpha>0.5 ? '#fff' : 'var(--ink-dim)';
+      return `<td class="heat-cell" style="background:${bg};color:${textColor}">${v>0?'+':''}${v.toFixed(1)}</td>`;
+    }).join('');
+    return `<tr><th class="heat-row-label">${g}</th>${cells}</tr>`;
+  }).join('');
+  return `<div class="heatmap-wrap"><table class="heatmap"><thead>${header}</thead><tbody>${rows}</tbody></table></div>`;
 }
 
 /* ---------------- Cohort Analysis Page ---------------- */
@@ -1084,7 +1308,7 @@ function renderReportPage(study){
       <button class="btn btn-secondary" id="print-report-btn">Print / Save as PDF</button>
       <button class="btn btn-ghost" id="regen-report-btn">Regenerate</button>
     </div>
-    <div class="report-draft-banner">⚠ Draft report — sample data — not for regulatory submission</div>
+    <div class="report-draft-banner">${icon('warning')} Draft report — sample data — not for regulatory submission</div>
     <div class="report-doc">
       <div class="report-cover">
         <div class="kicker">CellStories Platform · Cohort Study Report</div>
@@ -1121,7 +1345,7 @@ function renderReportPage(study){
         <table class="report-table">
           <thead><tr><th>Modality</th><th>Source</th></tr></thead>
           <tbody>
-            ${DATA_TYPES.map(dt=>`<tr><td>${dt.icon} ${dt.label}</td><td>${dataTypeSub(dt.key)}</td></tr>`).join('')}
+            ${DATA_TYPES.map(dt=>`<tr><td>${icon(dt.key)} ${dt.label}</td><td>${dataTypeSub(dt.key)}</td></tr>`).join('')}
           </tbody>
         </table>
         <h3>3.3 Analytical Approach</h3>
@@ -1422,7 +1646,7 @@ function renderPredictPage(study){
               <div style="margin-top:14px;">
                 ${matches
                   ? `<span class="pill done">✓ Matches quick prediction</span>`
-                  : `<span class="pill" style="background:var(--coral-soft);color:var(--coral-hover);">⚠ Differs — recommend confirmatory testing</span>`}
+                  : `<span class="pill" style="background:var(--coral-soft);color:var(--coral-hover);">${icon('warning')} Differs — recommend confirmatory testing</span>`}
               </div>
             </div>
           </div>
