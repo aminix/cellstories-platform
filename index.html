@@ -476,7 +476,7 @@
     <label>Password</label>
     <input type="password" id="login-password" placeholder="••••••••" required />
     <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:6px;">Sign In</button>
-    <p class="login-note">Demo access — any email and password will do.</p>
+    <p class="login-note">Demo access — any email and password combination is accepted.</p>
   </form>
 </div>
 
@@ -687,7 +687,7 @@ function renderStudiesPage(){
       <div>
         <span class="eyebrow">Workspace</span>
         <h1>Overview</h1>
-        <p>Every study keeps its own participants and its own patient-code numbering.</p>
+        <p>Each study maintains its own participant roster and patient-code numbering scheme.</p>
       </div>
       <button class="btn btn-primary" id="new-study-btn">+ New Study</button>
     </div>
@@ -1156,7 +1156,7 @@ function renderCohortPage(study){
       <div>
         <span class="eyebrow">${escapeHtml(study.prefix)} · Cohort</span>
         <h1>Cohort Analysis</h1>
-        <p>Looks across every participant's blood, history, genetic, wearable and organoid data to surface shared patterns and candidate disease subtypes.</p>
+        <p>Analyzes each participant's blood, medical history, genetic, wearable, and organoid data to identify shared patterns and candidate disease subtypes.</p>
       </div>
       ${hasRun ? `<button class="btn btn-secondary" id="rerun-btn">Re-run Analysis</button>` : ''}
     </div>
@@ -1559,7 +1559,7 @@ function renderPredictPage(study){
       <div>
         <span class="eyebrow">${escapeHtml(study.prefix)} · Predictor</span>
         <h1>Subtype Predictor</h1>
-        <p>Two different classifications, side by side: what the full data tells us for certain, and what a cheap-data shortcut can guess on its own.</p>
+        <p>Two classification pathways, presented side by side: the definitive subtype assignment derived from the complete dataset, and an early estimate generated from a reduced, lower-cost set of inputs.</p>
       </div>
     </div>
     <div class="tabs">
@@ -1577,7 +1577,7 @@ function renderPredictPage(study){
     body.innerHTML = `
       <div class="card run-panel">
         <h3 style="margin-bottom:8px;">Run cohort analysis first</h3>
-        <p style="color:var(--ink-faint);font-size:0.88rem;max-width:46ch;margin:0 auto 22px;">The predictor is trained against the subtypes found in cohort analysis. Run that first before predicting from partial data.</p>
+        <p style="color:var(--ink-faint);font-size:0.88rem;max-width:46ch;margin:0 auto 22px;">This model is trained against the subtypes identified in Cohort Analysis. Complete that analysis before generating predictions from partial data.</p>
         <a class="btn btn-primary" href="#/${study.id}/cohort">Go to Cohort Analysis</a>
       </div>`;
     return;
@@ -1591,34 +1591,34 @@ function renderPredictPage(study){
 
   body.innerHTML = `
     <div class="card predict-how">
-      <h3>How this works — two classifications, not one</h3>
+      <h3>Two classification pathways</h3>
       <div class="predict-steps">
         <div class="predict-step">
           <div class="step-num">1</div>
           <div>
             <h4>Full-panel classification</h4>
-            <p>Cohort Analysis clusters each participant using <strong>all five data types together</strong> — blood, medical history, genetics, wearables, and organoid response. This is the model's ground truth for what subtype someone actually belongs to.</p>
+            <p>Cohort Analysis assigns each participant to a subtype using <strong>all five data modalities in combination</strong> — blood markers, medical history, genetics, wearables, and organoid response. This assignment serves as the reference classification for each participant.</p>
           </div>
         </div>
         <div class="predict-step">
           <div class="step-num">2</div>
           <div>
-            <h4>Quick Predict — the cheap-data shortcut</h4>
-            <p>Trained against those ground-truth labels, this second model <strong>guesses the same subtype</strong> using only blood markers, medical history, and wearable/symptom data — no sequencing turnaround or organoid culture time needed.</p>
+            <h4>Quick Predict — a reduced-input model</h4>
+            <p>Trained on those reference classifications, this model estimates the same subtype using only blood markers, medical history, and wearable/symptom data — without requiring sequencing or organoid culture.</p>
           </div>
         </div>
       </div>
     </div>
 
     <div class="card predict-intro">
-      <h3>Meaningfully better than guessing</h3>
-      <p>A shortcut is only useful if it beats chance by a wide margin. Here's Quick Predict measured against a random guess among this study's ${groups.length} subtypes:</p>
+      <h3>Performance relative to chance</h3>
+      <p>A reduced-input model is only clinically useful if its accuracy substantially exceeds chance. The comparison below measures Quick Predict against a random assignment across this study's ${groups.length} subtypes:</p>
       ${concordance===null ? `
-        <p class="predict-note">No participants have blood + medical history + wearables data yet, so there's nothing eligible to measure.</p>
+        <p class="predict-note">No participants currently have blood, medical history, and wearable data on record, so no comparison can be measured yet.</p>
       ` : `
         <div class="predict-compare">
           <div class="compare-row">
-            <div class="compare-label">Random guess <span class="compare-sub">(1 of ${groups.length} subtypes)</span></div>
+            <div class="compare-label">Random assignment <span class="compare-sub">(1 of ${groups.length} subtypes)</span></div>
             <div class="compare-track"><div class="compare-fill baseline" style="width:${randomBaseline}%"></div></div>
             <div class="compare-pct">${randomBaseline}%</div>
           </div>
@@ -1628,7 +1628,7 @@ function renderPredictPage(study){
             <div class="compare-pct">${concordance}%</div>
           </div>
         </div>
-        <p class="predict-note">Measured across ${eligible.length} eligible participant${eligible.length===1?'':'s'} with blood, history, and wearable data on file, compared against their full-panel classification.</p>
+        <p class="predict-note">Based on ${eligible.length} participant${eligible.length===1?'':'s'} with blood, medical history, and wearable data available, compared against their full-panel classification.</p>
       `}
     </div>
 
@@ -1648,12 +1648,12 @@ function renderPredictPage(study){
     <div id="predict-result"></div>
 
     <div class="card predict-future">
-      <h3>${icon('target')} Where this goes next</h3>
-      <p>As Quick Predict is validated across larger, more diverse cohorts, the same shortcut could:</p>
+      <h3>${icon('target')} Potential clinical applications</h3>
+      <p>With further validation across larger and more diverse cohorts, this reduced-input model could:</p>
       <ul>
-        <li><strong>Support clinical decisions early</strong> — flagging a likely subtype from same-visit data, before full genetic or organoid results come back.</li>
-        <li><strong>Streamline Phase 2 trial recruitment</strong> — pre-screening candidates with routine, low-cost data so expensive confirmatory sequencing and organoid testing is reserved for participants who are actually likely to qualify.</li>
-        <li><strong>Prioritize confirmatory testing</strong> — surfacing which participants most need a full genetic/organoid workup to confirm a borderline prediction.</li>
+        <li><strong>Support earlier clinical decisions</strong> — indicating a probable subtype from same-visit data, in advance of genetic or organoid results.</li>
+        <li><strong>Streamline Phase 2 trial recruitment</strong> — pre-screening candidates using routine, low-cost data, so higher-cost confirmatory sequencing and organoid testing is reserved for participants most likely to qualify.</li>
+        <li><strong>Prioritize confirmatory testing</strong> — identifying which participants most warrant a full genetic or organoid workup to confirm a borderline result.</li>
       </ul>
     </div>
   `;
@@ -1668,10 +1668,10 @@ function renderPredictPage(study){
     result.innerHTML = '';
     if(!p || !cheapDataComplete(p)){
       const missing = CHEAP_TYPES.filter(k=>!p.status[k]).map(k=>DATA_TYPES.find(dt=>dt.key===k).label);
-      warning.innerHTML = `<div class="predict-warning">Can't predict yet — ${p.code} is missing: ${missing.join(', ')}.</div>`;
+      warning.innerHTML = `<div class="predict-warning">Prediction unavailable — ${p.code} is missing: ${missing.join(', ')}.</div>`;
       return;
     }
-    result.innerHTML = `<div class="card run-panel" style="padding:36px;"><div class="spinner"></div><p>Scoring ${p.code} from blood, history &amp; wearables…</p></div>`;
+    result.innerHTML = `<div class="card run-panel" style="padding:36px;"><div class="spinner"></div><p>Generating prediction for ${p.code} from blood, medical history, and wearable data…</p></div>`;
     setTimeout(()=>{
       const { trueIdx, predIdx, confidence, matches, probs } = predictForParticipant(p.code, groups);
       const predGroup = groups[predIdx], trueGroup = groups[trueIdx];
@@ -1694,7 +1694,7 @@ function renderPredictPage(study){
           </div>
           <div class="predict-result-grid">
             <div>
-              <span class="eyebrow" style="color:var(--azure-dim)">Quick predict · cheap data only</span>
+              <span class="eyebrow" style="color:var(--azure-dim)">Quick Predict · reduced data set</span>
               <div class="report-subtype-row">
                 <span class="sw" style="background:var(--${predGroup.color})">${predIdx+1}</span>
                 <div><strong>${predGroup.title}</strong><br/><span style="color:var(--ink-faint);font-size:0.85rem;">Confidence: ${confidence}%</span></div>
@@ -1715,7 +1715,7 @@ function renderPredictPage(study){
               </div>
               <div style="margin-top:14px;">
                 ${matches
-                  ? `<span class="pill done">✓ Matches quick prediction</span>`
+                  ? `<span class="pill done">✓ Matches Quick Predict</span>`
                   : `<span class="pill" style="background:var(--coral-soft);color:var(--coral-hover);">${icon('warning')} Differs — recommend confirmatory testing</span>`}
               </div>
             </div>
