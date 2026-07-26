@@ -410,7 +410,7 @@ function seedState(){
       { id:'mgh-pilot', name:'Mass General — Metabolic Pilot', prefix:'MGH', desc:'External pilot study with a hospital research team focused on metabolic disease subtyping.' },
     ],
     participants:{
-      'cs-internal': makeParticipants('CS', 18, '2026-07-20'),
+      'cs-internal': makeParticipants('CS', 50, '2026-07-20'),
       'mgh-pilot': makeParticipants('MGH', 11, '2026-07-18'),
     },
     cohortRun:{},
@@ -418,7 +418,7 @@ function seedState(){
   };
 }
 
-const STORE_KEY = 'cshub_prototype_v1';
+const STORE_KEY = 'cshub_prototype_v2';
 let state;
 try{
   const raw = localStorage.getItem(STORE_KEY);
@@ -818,13 +818,13 @@ function sparkline(values, color){
 
 /* ---------------- Cohort Analysis Page ---------------- */
 const GROUPS = [
-  { id:'a', color:'sage',  n:14, title:'Metabolic-risk subtype',
+  { id:'a', color:'sage',  n:17, title:'Metabolic-risk subtype',
     desc:'Family history of Type 2 Diabetes, TCF7L2/PPARG risk variants. Organoids show strong response to Treatment X (GLP‑1 analog).' },
-  { id:'b', color:'azure', n:11, title:'Inflammatory subtype',
+  { id:'b', color:'azure', n:13, title:'Inflammatory subtype',
     desc:'Elevated hs-CRP and reduced heart-rate variability on wearable data. Organoids show inflammatory pathway activation, partial response to Treatment Y.' },
-  { id:'c', color:'coral', n:9,  title:'Low-response subtype',
+  { id:'c', color:'coral', n:11,  title:'Low-response subtype',
     desc:'BRCA-adjacent variant carriers with an otherwise normal blood panel. Organoids show minimal response across the drug panel — candidates for combination therapy.' },
-  { id:'u', color:'grey',  n:8,  title:'Unclassified',
+  { id:'u', color:'grey',  n:9,  title:'Unclassified',
     desc:'Not enough uploaded data yet to confidently assign a subtype. Awaiting additional blood/genetic/wearable uploads.' },
 ];
 
