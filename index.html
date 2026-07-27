@@ -43,6 +43,9 @@
     --taupe:#A69C93;
     --taupe-soft:#F0EDE9;
 
+    --ink-card:#2B2635;
+    --ink-line:#3A3345;
+
     --display:'Fraunces', serif;
     --body:'Work Sans', sans-serif;
     --mono:'IBM Plex Mono', monospace;
@@ -277,92 +280,92 @@
   @media (max-width:600px){ .landing-choices{ grid-template-columns:1fr; } }
 
   /* ---------- Patient app (Oura-inspired) ---------- */
-  .patient-shell{ min-height:100vh; background:#0F0D14; color:#B7AFC4; padding-bottom:40px; }
+  .patient-shell{ min-height:100vh; background:var(--ink); color:rgba(251,250,252,0.66); padding-bottom:40px; }
   .pa-topbar{ display:flex; align-items:center; justify-content:space-between; max-width:720px; margin:0 auto; padding:22px 20px 6px; }
   .pa-brand{ display:flex; align-items:center; gap:9px; }
-  .pa-brand span{ font-family:var(--display); font-weight:700; font-size:1.05rem; color:#F3EFF7; }
+  .pa-brand span{ font-family:var(--display); font-weight:700; font-size:1.05rem; color:var(--white); }
   .pa-topbar-actions{ display:flex; gap:14px; align-items:center; }
-  .pa-link{ font-family:var(--mono); font-size:0.72rem; text-transform:uppercase; letter-spacing:.04em; color:#8A8096; display:inline-flex; align-items:center; gap:3px; }
-  .pa-link:hover{ color:#F3EFF7; }
+  .pa-link{ font-family:var(--mono); font-size:0.72rem; text-transform:uppercase; letter-spacing:.04em; color:rgba(251,250,252,0.42); display:inline-flex; align-items:center; gap:3px; }
+  .pa-link:hover{ color:var(--white); }
   .pa-badge{ font-family:var(--mono); font-size:0.62rem; text-transform:uppercase; letter-spacing:.04em; color:#F0B49F; background:rgba(226,114,91,0.14); border:1px solid rgba(226,114,91,0.3); padding:3px 8px; border-radius:6px; }
 
   .pa-container{ max-width:720px; margin:0 auto; padding:0 20px 90px; }
 
   .pa-hero{ text-align:center; padding:14px 0 6px; }
-  .pa-eyebrow{ font-family:var(--mono); font-size:0.7rem; letter-spacing:.06em; text-transform:uppercase; color:#8A8096; margin-bottom:8px; }
-  .pa-hero h1{ font-family:var(--display); font-size:1.5rem; color:#F3EFF7; margin-bottom:8px; }
+  .pa-eyebrow{ font-family:var(--mono); font-size:0.7rem; letter-spacing:.06em; text-transform:uppercase; color:rgba(251,250,252,0.42); margin-bottom:8px; }
+  .pa-hero h1{ font-family:var(--display); font-size:1.5rem; color:var(--white); margin-bottom:8px; }
   .pa-hero p{ font-size:0.92rem; color:#9C93A8; max-width:46ch; margin:0 auto; }
 
   .pa-ring-wrap{ display:flex; justify-content:center; margin:20px 0 26px; }
   .pa-ring{ position:relative; width:200px; height:200px; }
   .pa-ring svg{ transform:rotate(-90deg); display:block; }
   .pa-ring-center{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
-  .pa-ring-num{ font-family:var(--display); font-weight:700; font-size:2.6rem; color:#F3EFF7; line-height:1; }
-  .pa-ring-lbl{ font-family:var(--mono); font-size:0.7rem; text-transform:uppercase; letter-spacing:.05em; color:#8A8096; margin-top:6px; }
+  .pa-ring-num{ font-family:var(--display); font-weight:700; font-size:2.6rem; color:var(--white); line-height:1; }
+  .pa-ring-lbl{ font-family:var(--mono); font-size:0.7rem; text-transform:uppercase; letter-spacing:.05em; color:rgba(251,250,252,0.42); margin-top:6px; }
 
   .pa-mini-row{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:26px; }
-  .pa-mini{ background:#181420; border:1px solid #2A2433; border-radius:18px; padding:16px 10px; text-align:center; }
+  .pa-mini{ background:var(--ink-card); border:1px solid var(--ink-line); border-radius:18px; padding:16px 10px; text-align:center; }
   .pa-mini-ring{ width:64px; height:64px; margin:0 auto 10px; position:relative; }
   .pa-mini-ring svg{ transform:rotate(-90deg); display:block; }
-  .pa-mini-num{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:var(--display); font-weight:700; font-size:1rem; color:#F3EFF7; }
-  .pa-mini-lbl{ font-size:0.74rem; color:#8A8096; }
+  .pa-mini-num{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:var(--display); font-weight:700; font-size:1rem; color:var(--white); }
+  .pa-mini-lbl{ font-size:0.74rem; color:rgba(251,250,252,0.42); }
 
-  .pa-section-title{ font-family:var(--display); font-size:1.05rem; color:#F3EFF7; margin:26px 0 14px; }
-  .pa-card{ background:#181420; border:1px solid #2A2433; border-radius:18px; padding:20px 22px; margin-bottom:14px; }
+  .pa-section-title{ font-family:var(--display); font-size:1.05rem; color:var(--white); margin:26px 0 14px; }
+  .pa-card{ background:var(--ink-card); border:1px solid var(--ink-line); border-radius:18px; padding:20px 22px; margin-bottom:14px; }
   .pa-card.glow-lime{ box-shadow: inset 3px 0 0 #A8CC3A; }
   .pa-card.glow-amber{ box-shadow: inset 3px 0 0 #D9A441; }
   .pa-card.glow-coral{ box-shadow: inset 3px 0 0 #E2725B; }
   .pa-card.glow-sky{ box-shadow: inset 3px 0 0 #5FB8D6; }
   .pa-card.glow-lavender{ box-shadow: inset 3px 0 0 #9B8FC4; }
-  .pa-card h4{ display:flex; align-items:center; gap:9px; font-family:var(--body); font-weight:700; font-size:0.92rem; color:#F3EFF7; margin-bottom:8px; }
+  .pa-card h4{ display:flex; align-items:center; gap:9px; font-family:var(--body); font-weight:700; font-size:0.92rem; color:var(--white); margin-bottom:8px; }
   .pa-card h4 .icon{ width:17px; height:17px; margin:0; }
-  .pa-card p{ font-size:0.88rem; color:#ABA2B8; line-height:1.6; }
+  .pa-card p{ font-size:0.88rem; color:rgba(251,250,252,0.64); line-height:1.6; }
 
   .pa-kv-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-  .pa-kv{ background:#14111B; border:1px solid #2A2433; border-radius:12px; padding:11px 13px; }
-  .pa-kv .k{ display:block; font-family:var(--mono); font-size:0.62rem; text-transform:uppercase; color:#7D7488; letter-spacing:.04em; margin-bottom:4px; }
-  .pa-kv .v{ font-size:0.85rem; color:#F3EFF7; font-weight:600; }
+  .pa-kv{ background:rgba(0,0,0,0.16); border:1px solid var(--ink-line); border-radius:12px; padding:11px 13px; }
+  .pa-kv .k{ display:block; font-family:var(--mono); font-size:0.62rem; text-transform:uppercase; color:rgba(251,250,252,0.36); letter-spacing:.04em; margin-bottom:4px; }
+  .pa-kv .v{ font-size:0.85rem; color:var(--white); font-weight:600; }
 
   .pa-indep{ display:flex; gap:14px; align-items:flex-start; border-radius:18px; padding:18px 20px; margin-bottom:8px;
     background:linear-gradient(135deg, rgba(168,204,58,0.1), rgba(95,184,214,0.08)); border:1px solid rgba(168,204,58,0.28); }
   .pa-indep .icon{ width:20px; height:20px; color:#A8CC3A; margin-top:2px; flex-shrink:0; }
-  .pa-indep strong{ display:block; font-family:var(--display); font-size:0.95rem; color:#F3EFF7; margin-bottom:4px; }
-  .pa-indep p{ font-size:0.83rem; color:#ABA2B8; line-height:1.55; }
+  .pa-indep strong{ display:block; font-family:var(--display); font-size:0.95rem; color:var(--white); margin-bottom:4px; }
+  .pa-indep p{ font-size:0.83rem; color:rgba(251,250,252,0.64); line-height:1.55; }
 
   .pa-fit-row{ margin-bottom:16px; }
   .pa-fit-row:last-child{ margin-bottom:0; }
   .pa-fit-label{ display:flex; justify-content:space-between; align-items:baseline; font-size:0.86rem; margin-bottom:7px; gap:10px; flex-wrap:wrap; }
-  .pa-fit-label .name{ font-weight:700; color:#F3EFF7; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
-  .pa-fit-label .mech{ font-family:var(--mono); font-size:0.66rem; color:#7D7488; font-weight:400; }
-  .pa-fit-label .cur-tag{ font-family:var(--mono); font-size:0.6rem; text-transform:uppercase; background:rgba(155,143,196,0.18); color:#C3B8E8; padding:2px 7px; border-radius:5px; }
-  .pa-fit-val{ font-family:var(--mono); color:#7D7488; font-size:0.8rem; }
-  .pa-fit-track{ height:8px; border-radius:5px; background:#26202E; overflow:hidden; }
+  .pa-fit-label .name{ font-weight:700; color:var(--white); display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .pa-fit-label .mech{ font-family:var(--mono); font-size:0.66rem; color:rgba(251,250,252,0.36); font-weight:400; }
+  .pa-fit-label .cur-tag{ font-family:var(--mono); font-size:0.6rem; text-transform:uppercase; background:rgba(155,143,196,0.18); color:var(--lavender); padding:2px 7px; border-radius:5px; }
+  .pa-fit-val{ font-family:var(--mono); color:rgba(251,250,252,0.36); font-size:0.8rem; }
+  .pa-fit-track{ height:8px; border-radius:5px; background:rgba(251,250,252,0.12); overflow:hidden; }
   .pa-fit-fill{ height:100%; border-radius:5px; }
 
   .pa-suggestion{ border-radius:16px; padding:20px 22px; margin-top:14px; }
   .pa-suggestion.has{ background:rgba(217,164,65,0.1); border:1px solid rgba(217,164,65,0.32); }
   .pa-suggestion.no{ background:rgba(168,204,58,0.08); border:1px solid rgba(168,204,58,0.28); }
   .pa-suggestion strong{ display:block; margin-bottom:6px; font-family:var(--display); font-size:0.98rem; }
-  .pa-suggestion p{ font-size:0.87rem; color:#ABA2B8; line-height:1.6; }
+  .pa-suggestion p{ font-size:0.87rem; color:rgba(251,250,252,0.64); line-height:1.6; }
 
   .pa-actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; }
   .pa-btn{ display:inline-flex; align-items:center; gap:8px; font-size:0.86rem; font-weight:600; font-family:var(--body); padding:11px 18px; border-radius:12px; border:1px solid transparent; }
-  .pa-btn-primary{ background:#F3EFF7; color:#15121A; }
+  .pa-btn-primary{ background:var(--white); color:var(--ink); }
   .pa-btn-primary:hover{ background:#fff; }
-  .pa-btn-secondary{ background:transparent; color:#F3EFF7; border-color:#332C40; }
-  .pa-btn-secondary:hover{ border-color:#4A4258; }
+  .pa-btn-secondary{ background:transparent; color:var(--white); border-color:var(--ink-line); }
+  .pa-btn-secondary:hover{ border-color:rgba(251,250,252,0.28); }
 
   .pa-picker-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-  .pa-picker-card{ display:block; background:#181420; border:1px solid #2A2433; border-radius:18px; padding:20px; text-align:left; transition:border-color .15s, transform .15s; }
-  .pa-picker-card:hover{ transform:translateY(-2px); border-color:#4A4258; }
-  .pa-picker-card h4{ font-family:var(--mono); font-size:0.85rem; color:#F3EFF7; margin-bottom:8px; }
-  .pa-picker-card p{ font-size:0.8rem; color:#8A8096; margin-bottom:14px; min-height:34px; }
+  .pa-picker-card{ display:block; background:var(--ink-card); border:1px solid var(--ink-line); border-radius:18px; padding:20px; text-align:left; transition:border-color .15s, transform .15s; }
+  .pa-picker-card:hover{ transform:translateY(-2px); border-color:rgba(251,250,252,0.28); }
+  .pa-picker-card h4{ font-family:var(--mono); font-size:0.85rem; color:var(--white); margin-bottom:8px; }
+  .pa-picker-card p{ font-size:0.8rem; color:rgba(251,250,252,0.42); margin-bottom:14px; min-height:34px; }
 
-  .pa-tabbar{ position:fixed; bottom:0; left:0; right:0; background:rgba(15,13,20,0.88); backdrop-filter:blur(12px);
-    border-top:1px solid #2A2433; display:flex; justify-content:center; padding:10px 16px; z-index:50; }
+  .pa-tabbar{ position:fixed; bottom:0; left:0; right:0; background:rgba(33,30,43,0.88); backdrop-filter:blur(12px);
+    border-top:1px solid var(--ink-line); display:flex; justify-content:center; padding:10px 16px; z-index:50; }
   .pa-tabbar-inner{ display:flex; gap:8px; max-width:720px; width:100%; justify-content:space-around; }
-  .pa-tab{ display:flex; flex-direction:column; align-items:center; gap:4px; font-size:0.66rem; color:#7D7488; font-family:var(--mono); padding:4px 10px; border-radius:10px; }
-  .pa-tab.active{ color:#F3EFF7; }
+  .pa-tab{ display:flex; flex-direction:column; align-items:center; gap:4px; font-size:0.66rem; color:rgba(251,250,252,0.36); font-family:var(--mono); padding:4px 10px; border-radius:10px; }
+  .pa-tab.active{ color:var(--white); }
   .pa-tab .icon{ width:19px; height:19px; margin:0; }
 
   @media (max-width:520px){
@@ -1036,7 +1039,7 @@ function ringSvg(pct, color, size, stroke){
   const clamped = Math.max(0, Math.min(100, pct));
   const offset = c * (1 - clamped/100);
   return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
-    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="#26202E" stroke-width="${stroke}"/>
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="rgba(251,250,252,0.12)" stroke-width="${stroke}"/>
     <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${color}" stroke-width="${stroke}" stroke-linecap="round" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${offset.toFixed(1)}"/>
   </svg>`;
 }
@@ -1045,7 +1048,7 @@ function patientTopbar(){
     <div class="pa-topbar">
       <a class="pa-brand" href="#/">
         <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
-          <circle cx="16" cy="16" r="10.5" stroke="#F3EFF7" stroke-width="2"/>
+          <circle cx="16" cy="16" r="10.5" stroke="var(--white)" stroke-width="2"/>
           <circle cx="16" cy="16" r="6.5" stroke="#5FB8D6" stroke-width="2"/>
           <circle cx="16" cy="16" r="2" fill="#A8CC3A"/>
         </svg>
@@ -1097,7 +1100,7 @@ function renderPatientAppHome(){
           <a class="pa-picker-card" href="#/app/${d.p.code}">
             <h4>${d.p.code}</h4>
             <p>${escapeHtml(d.desc)}</p>
-            <span class="pa-link" style="color:#C3B8E8;">Open dashboard ${icon('chevron')}</span>
+            <span class="pa-link" style="color:var(--lavender);">Open dashboard ${icon('chevron')}</span>
           </a>`).join('')}
       </div>
     </div>
@@ -1199,7 +1202,7 @@ function renderPatientAppDashboard(code){
 
       <div class="pa-section-title">Your options</div>
       <div class="pa-card">
-        <p style="font-size:0.88rem;color:#ABA2B8;margin-bottom:18px;">${p.drug} isn't the only GLP-1 option available. Here's how your genetics and how you've responded so far line up against every option we track — not just the one you're on.</p>
+        <p style="font-size:0.88rem;color:rgba(251,250,252,0.64);margin-bottom:18px;">${p.drug} isn't the only GLP-1 option available. Here's how your genetics and how you've responded so far line up against every option we track — not just the one you're on.</p>
         ${opts.fits.map(f=>`
           <div class="pa-fit-row">
             <div class="pa-fit-label">
@@ -1212,7 +1215,7 @@ function renderPatientAppDashboard(code){
         <div class="pa-suggestion ${opts.meaningfullyBetter?'has':'no'}">
           ${opts.meaningfullyBetter ? `
             <strong style="color:${PA_COLORS.amber}">Worth raising with your prescriber</strong>
-            <p>Based on your genetic profile and how you've responded so far, some patients like you see better tolerability on <strong style="color:#F3EFF7">${opts.bestAlt.drug}</strong> (${opts.bestAlt.mechanism}). We're not making this switch for you — it's simply something worth a conversation at your next appointment.</p>
+            <p>Based on your genetic profile and how you've responded so far, some patients like you see better tolerability on <strong style="color:var(--white)">${opts.bestAlt.drug}</strong> (${opts.bestAlt.mechanism}). We're not making this switch for you — it's simply something worth a conversation at your next appointment.</p>
           ` : `
             <strong style="color:${PA_COLORS.lime}">Your current treatment looks well matched</strong>
             <p>Given your profile and how things have gone so far, we don't see a reason to recommend a change right now. We'll keep watching and tell you if that changes.</p>
