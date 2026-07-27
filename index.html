@@ -276,7 +276,15 @@
    ========================================================= */
 
 const CLINIC_NAME = 'Thornbury Women\'s Health Clinic';
-const DRUGS = ['Semaglutide','Tirzepatide'];
+const DRUGS = ['Semaglutide','Tirzepatide','Liraglutide','Orforglipron'];
+const DOSE_SCHEDULES = {
+  Semaglutide:  ['0.25mg','0.5mg','1mg','1.7mg','2.4mg'],
+  Tirzepatide:  ['2.5mg','5mg','7.5mg','10mg','12.5mg'],
+  Liraglutide:  ['0.6mg','1.2mg','1.8mg','2.4mg','3mg'],
+  Orforglipron: ['3mg','6mg','12mg','24mg','36mg'],
+};
+const CONTRACEPTION_OPTIONS = ['Combined pill','Progestogen-only pill','Hormonal IUD','None'];
+const OTHER_MEDS_POOL = ['Levothyroxine (hypothyroidism)','Sertraline (SSRI)','Metformin','Atorvastatin','Vitamin D + calcium'];
 
 function seedRandom(seed){
   return function(){ seed = (seed*1103515245+12345) & 0x7fffffff; return seed/0x7fffffff; };
@@ -297,6 +305,9 @@ const ICON_PATHS = {
   dna:       '<path d="M7.5 3c0 6 9 6 9 12s-9 6-9 12"/><path d="M16.5 3c0 6-9 6-9 12s9 6 9 12"/><path d="M8 7.3h8M8 12h8M8 16.7h8"/>',
   activity:  '<path d="M3 12h4l2 8 4-16 2 8h6"/>',
   droplet:   '<path d="M12 3s7 7.6 7 12.2A7 7 0 1 1 5 15.2C5 10.6 12 3 12 3Z"/>',
+  history:   '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3.5A1.5 1.5 0 0 1 10.5 2h3A1.5 1.5 0 0 1 15 3.5V4"/><path d="M8.2 10.5h7.6M8.2 14h7.6M8.2 17.5h5"/>',
+  capsule:   '<path d="M6.5 17.5a5 5 0 0 1 0-7.07l4.93-4.93a5 5 0 0 1 7.07 7.07l-4.93 4.93a5 5 0 0 1-7.07 0Z"/><path d="M9.5 8.5l6 6"/>',
+  steps:     '<path d="M4 20h4v-4h4v-4h4v-4h4V4"/>',
 };
 function icon(name){
   return `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${ICON_PATHS[name]||''}</svg>`;
@@ -324,11 +335,34 @@ function buildPatients(){
       (glp1rFavorable ? 12 : 55) * 0.6 + (giprFavorable ? 10 : 45) * 0.4
     );
 
+    // hormonal status & medical history
+    const statusRoll = rnd();
+    const menopausalStatus = statusRoll < 0.25 ? 'Pre-menopausal' : (statusRoll < 0.65 ? 'Perimenopausal' : 'Post-menopausal');
+    let contraception = 'Not applicable';
+    if(menopausalStatus==='Pre-menopausal'){
+      contraception = CONTRACEPTION_OPTIONS[Math.floor(rnd()*CONTRACEPTION_OPTIONS.length)];
+    } else if(menopausalStatus==='Perimenopausal'){
+      contraception = rnd() < 0.55 ? 'None' : CONTRACEPTION_OPTIONS[1 + Math.floor(rnd()*2)];
+    }
+    const onHRT = menopausalStatus==='Perimenopausal' ? rnd() < 0.3 : (menopausalStatus==='Post-menopausal' ? rnd() < 0.4 : false);
+    const otherMeds = OTHER_MEDS_POOL.filter(()=>rnd() < 0.16);
+    let statusChangeNote = null;
+    if(menopausalStatus==='Perimenopausal' && rnd() < 0.14){
+      statusChangeNote = `Transitioning toward post-menopausal status around week ${2+Math.floor(rnd()*8)} — dose progression reviewed accordingly.`;
+    } else if(menopausalStatus!=='Post-menopausal' && contraception!=='None' && contraception!=='Not applicable' && rnd() < 0.1){
+      statusChangeNote = `Stopped ${contraception.toLowerCase()} around week ${2+Math.floor(rnd()*8)}.`;
+    }
+    // perimenopausal hormonal fluctuation modestly elevates GI symptom sensitivity
+    const nauseaMultiplier = menopausalStatus==='Perimenopausal' ? 1.15 : 1.0;
+
+    const doseSchedule = DOSE_SCHEDULES[drug];
     const log = [];
     let flagWeek = null;
     let cumWeight = 0;
     let nausea = profile==='poor' ? 3 + rnd()*2 : (profile==='mixed' ? 1.5 + rnd()*1.5 : rnd()*1.5);
     let cgm = 148 + rnd()*10;
+    let doseIdx = 0;
+    let weeksAtStep = 0;
 
     for(let w=1; w<=week; w++){
       const expected = EXPECTED_CURVE[Math.min(w,12)];
@@ -345,8 +379,16 @@ function buildPatients(){
         nausea = Math.min(10, nausea + (rnd()*1.3-0.1));
         cgm = cgm - (0.1 + rnd()*0.4) + (rnd()*0.6);
       }
+      nausea = Math.min(10, nausea * nauseaMultiplier);
       const adherence = Math.max(55, Math.round(100 - nausea*4.2 - rnd()*6));
-      log.push({ week:w, weightPct:+cumWeight.toFixed(1), nausea:+nausea.toFixed(1), cgm:Math.round(cgm), adherence });
+
+      weeksAtStep++;
+      const holdDose = nausea >= 6.5;
+      if(weeksAtStep >= 3 && doseIdx < doseSchedule.length-1 && !holdDose){
+        doseIdx++;
+        weeksAtStep = 0;
+      }
+      log.push({ week:w, weightPct:+cumWeight.toFixed(1), nausea:+nausea.toFixed(1), cgm:Math.round(cgm), adherence, dose:doseSchedule[doseIdx] });
 
       const symptomRisk = Math.min(100, Math.round(nausea*9));
       const wearableRisk = Math.min(100, Math.round(Math.max(0, (cumWeight - expected*0.5)) * 14));
@@ -359,10 +401,15 @@ function buildPatients(){
     const wearableRisk = Math.min(100, Math.round(Math.max(0, (last.weightPct - EXPECTED_CURVE[Math.min(week,12)]*0.5)) * 14));
     const overall = Math.round(geneticRisk*0.25 + symptomRisk*0.5 + wearableRisk*0.25);
     const riskLevel = overall >= 42 ? 'high' : (overall >= 26 ? 'watch' : 'ontrack');
+    const doseRecommendation = riskLevel==='high' ? 'Hold current dose — reassess before escalating'
+      : riskLevel==='watch' ? 'Slow titration — monitor before next increase'
+      : 'Continue standard titration';
 
     patients.push({
       code, drug, week, glp1rFavorable, giprFavorable, profile, log,
       geneticRisk, symptomRisk, wearableRisk, overall, riskLevel, flagWeek,
+      menopausalStatus, contraception, onHRT, otherMeds, statusChangeNote,
+      doseSchedule, doseIdx, doseRecommendation,
     });
   }
   return patients;
@@ -459,7 +506,7 @@ function renderRosterPage(){
       <div>
         <span class="eyebrow">${escapeHtml(CLINIC_NAME)}</span>
         <h1>Patient Roster</h1>
-        <p>Everyone currently in their first 12 weeks of GLP-1 therapy, with early signal on efficacy and GI-side-effect risk — not just the next weigh-in.</p>
+        <p>Everyone currently in their first 12 weeks of GLP-1 therapy, with early signal on efficacy and GI-side-effect risk — not just the next weigh-in. Built for women specifically, who experience GI side effects at higher rates and whose hormonal status can shift how a dose should progress.</p>
       </div>
     </div>
     <div class="kpi-row">
@@ -500,7 +547,7 @@ function renderRosterPage(){
       <div class="table-scroll">
       <table>
         <thead><tr>
-          <th>Code</th><th>Week</th><th>Drug</th><th>${icon('activity')} Efficacy trend</th><th>${icon('droplet')} GI symptom trend</th><th>Risk</th>
+          <th>Code</th><th>Week</th><th>Drug</th><th>${icon('steps')} Dose</th><th>${icon('activity')} Efficacy trend</th><th>${icon('droplet')} GI symptom trend</th><th>Risk</th>
         </tr></thead>
         <tbody id="p-tbody"></tbody>
       </table>
@@ -529,10 +576,11 @@ function renderRosterPage(){
         <td class="code-cell">${p.code}</td>
         <td><div class="week-track"><div class="week-bar"><div class="week-fill" style="width:${p.week/12*100}%"></div></div><span class="week-lbl">${p.week}/12</span></div></td>
         <td>${p.drug}</td>
+        <td class="code-cell">${p.doseSchedule[p.doseIdx]} <span style="color:var(--ink-faint);font-weight:400;">(step ${p.doseIdx+1}/${p.doseSchedule.length})</span></td>
         <td>${trendChip(p)}</td>
         <td>${symptomChip(p)}</td>
         <td>${riskPill(p.riskLevel)}</td>
-      </tr>`).join('') || `<tr><td colspan="6" style="text-align:center;color:var(--ink-faint);padding:30px;">No patients match your filters.</td></tr>`;
+      </tr>`).join('') || `<tr><td colspan="7" style="text-align:center;color:var(--ink-faint);padding:30px;">No patients match your filters.</td></tr>`;
     document.getElementById('p-count').textContent = `${rows.length} of ${PATIENTS.length}`;
   }
   document.getElementById('p-search').addEventListener('input', draw);
@@ -570,10 +618,35 @@ function renderPatientPage(code){
       </div>
 
       <div class="pid-card">
+        <h3>${icon('history')} Medical history &amp; hormonal status</h3>
+        <div class="kv-grid">
+          <div class="kv"><span class="k">Menopausal status</span><span class="v">${p.menopausalStatus}</span></div>
+          <div class="kv"><span class="k">Hormonal contraception</span><span class="v">${p.contraception}</span></div>
+          <div class="kv"><span class="k">HRT</span><span class="v">${p.onHRT ? 'Currently on HRT' : 'Not on HRT'}</span></div>
+          <div class="kv"><span class="k">Other medications</span><span class="v">${p.otherMeds.length ? p.otherMeds.join(', ') : 'None reported'}</span></div>
+        </div>
+        ${p.statusChangeNote ? `<p style="font-size:0.84rem;color:var(--lavender-dim);margin-top:14px;">${icon('alert')} ${escapeHtml(p.statusChangeNote)}</p>` : ''}
+      </div>
+    </div>
+
+    <div class="pid-grid">
+      <div class="pid-card">
         <h3>Why this patient is flagged</h3>
         ${factorRow('Genetic predisposition', p.geneticRisk)}
         ${factorRow('GI symptom trajectory', p.symptomRisk)}
         ${factorRow('Wearable / CGM signal', p.wearableRisk)}
+      </div>
+
+      <div class="pid-card">
+        <h3>${icon('steps')} Dose &amp; titration</h3>
+        <div class="kv-grid">
+          <div class="kv"><span class="k">Current dose</span><span class="v">${p.doseSchedule[p.doseIdx]}</span></div>
+          <div class="kv"><span class="k">Titration step</span><span class="v">${p.doseIdx+1} of ${p.doseSchedule.length}</span></div>
+        </div>
+        <div class="week-track" style="margin-top:14px;">
+          <div class="week-bar" style="width:100%;"><div class="week-fill" style="width:${(p.doseIdx+1)/p.doseSchedule.length*100}%"></div></div>
+        </div>
+        <p style="font-size:0.86rem;font-weight:600;color:${p.riskLevel==='high'?'var(--coral-dim)':p.riskLevel==='watch'?'var(--amber-dim)':'var(--lime-dim)'};margin-top:14px;">${p.doseRecommendation}</p>
       </div>
     </div>
 
@@ -681,6 +754,14 @@ function renderOverviewPage(){
   const retained = PATIENTS.filter(p=>!(p.riskLevel==='high' && p.week>=8)).length;
   const retentionPct = Math.round(retained/total*100);
 
+  const statuses = ['Pre-menopausal','Perimenopausal','Post-menopausal'];
+  const statusStats = statuses.map(s=>{
+    const group = PATIENTS.filter(p=>p.menopausalStatus===s);
+    const avgNausea = group.length ? group.reduce((sum,p)=>sum+p.log[p.log.length-1].nausea,0)/group.length : 0;
+    const flaggedPct = group.length ? Math.round(group.filter(p=>p.riskLevel!=='ontrack').length/group.length*100) : 0;
+    return { status:s, count:group.length, avgNausea, flaggedPct };
+  });
+
   app.innerHTML = `
     <div class="page-head">
       <div>
@@ -719,6 +800,19 @@ function renderOverviewPage(){
           <div style="height:12px;border-radius:6px;background:var(--taupe-soft);overflow:hidden;"><div style="height:100%;width:${avgFlagWeek/12*100}%;border-radius:6px;background:linear-gradient(90deg, var(--sky-dim), var(--lavender));"></div></div>
           <div style="font-family:var(--mono);font-weight:600;font-size:0.86rem;text-align:right;">Week ${avgFlagWeek.toFixed(1)}</div>
         </div>
+      </div>
+    </div>
+
+    <div class="card" style="padding:26px 28px;margin-bottom:20px;">
+      <h3 style="margin-bottom:8px;">What the pilot is teaching us</h3>
+      <p style="font-size:0.9rem;color:var(--ink-dim);max-width:68ch;margin-bottom:18px;">Comparing outcomes by hormonal status — the core question this pilot is designed to answer before we take this learning further.</p>
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Hormonal status</th><th>Patients</th><th>Avg. GI symptom severity</th><th>% flagged watch/high</th></tr></thead>
+        <tbody>
+          ${statusStats.map(s=>`<tr><td>${s.status}</td><td>${s.count}</td><td>${s.avgNausea.toFixed(1)} / 10</td><td>${s.flaggedPct}%</td></tr>`).join('')}
+        </tbody>
+      </table>
       </div>
     </div>
 
