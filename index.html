@@ -276,40 +276,100 @@
   .landing-card .lc-cta{ font-family:var(--mono); font-size:0.78rem; font-weight:600; display:flex; align-items:center; gap:4px; }
   @media (max-width:600px){ .landing-choices{ grid-template-columns:1fr; } }
 
-  /* ---------- Patient app ---------- */
-  .patient-app .sidebar{ background:linear-gradient(180deg, #2A2233, var(--ink)); }
-  .patient-hero{ background:linear-gradient(135deg, var(--lavender-soft), var(--sky-soft)); border-radius:20px; padding:28px 30px; margin-bottom:24px; }
-  .patient-hero .eyebrow{ color:var(--coral-dim); }
-  .patient-hero h1{ font-size:1.5rem; margin-bottom:8px; }
-  .patient-hero p{ color:var(--ink-dim); font-size:0.94rem; max-width:60ch; }
+  /* ---------- Patient app (Oura-inspired) ---------- */
+  .patient-shell{ min-height:100vh; background:#0F0D14; color:#B7AFC4; padding-bottom:40px; }
+  .pa-topbar{ display:flex; align-items:center; justify-content:space-between; max-width:720px; margin:0 auto; padding:22px 20px 6px; }
+  .pa-brand{ display:flex; align-items:center; gap:9px; }
+  .pa-brand span{ font-family:var(--display); font-weight:700; font-size:1.05rem; color:#F3EFF7; }
+  .pa-topbar-actions{ display:flex; gap:14px; align-items:center; }
+  .pa-link{ font-family:var(--mono); font-size:0.72rem; text-transform:uppercase; letter-spacing:.04em; color:#8A8096; display:inline-flex; align-items:center; gap:3px; }
+  .pa-link:hover{ color:#F3EFF7; }
+  .pa-badge{ font-family:var(--mono); font-size:0.62rem; text-transform:uppercase; letter-spacing:.04em; color:#F0B49F; background:rgba(226,114,91,0.14); border:1px solid rgba(226,114,91,0.3); padding:3px 8px; border-radius:6px; }
 
-  .indep-banner{
-    display:flex; gap:14px; align-items:flex-start; background:var(--ink); color:var(--white);
-    border-radius:16px; padding:18px 22px; margin-bottom:24px;
+  .pa-container{ max-width:720px; margin:0 auto; padding:0 20px 90px; }
+
+  .pa-hero{ text-align:center; padding:14px 0 6px; }
+  .pa-eyebrow{ font-family:var(--mono); font-size:0.7rem; letter-spacing:.06em; text-transform:uppercase; color:#8A8096; margin-bottom:8px; }
+  .pa-hero h1{ font-family:var(--display); font-size:1.5rem; color:#F3EFF7; margin-bottom:8px; }
+  .pa-hero p{ font-size:0.92rem; color:#9C93A8; max-width:46ch; margin:0 auto; }
+
+  .pa-ring-wrap{ display:flex; justify-content:center; margin:20px 0 26px; }
+  .pa-ring{ position:relative; width:200px; height:200px; }
+  .pa-ring svg{ transform:rotate(-90deg); display:block; }
+  .pa-ring-center{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .pa-ring-num{ font-family:var(--display); font-weight:700; font-size:2.6rem; color:#F3EFF7; line-height:1; }
+  .pa-ring-lbl{ font-family:var(--mono); font-size:0.7rem; text-transform:uppercase; letter-spacing:.05em; color:#8A8096; margin-top:6px; }
+
+  .pa-mini-row{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:26px; }
+  .pa-mini{ background:#181420; border:1px solid #2A2433; border-radius:18px; padding:16px 10px; text-align:center; }
+  .pa-mini-ring{ width:64px; height:64px; margin:0 auto 10px; position:relative; }
+  .pa-mini-ring svg{ transform:rotate(-90deg); display:block; }
+  .pa-mini-num{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:var(--display); font-weight:700; font-size:1rem; color:#F3EFF7; }
+  .pa-mini-lbl{ font-size:0.74rem; color:#8A8096; }
+
+  .pa-section-title{ font-family:var(--display); font-size:1.05rem; color:#F3EFF7; margin:26px 0 14px; }
+  .pa-card{ background:#181420; border:1px solid #2A2433; border-radius:18px; padding:20px 22px; margin-bottom:14px; }
+  .pa-card.glow-lime{ box-shadow: inset 3px 0 0 #A8CC3A; }
+  .pa-card.glow-amber{ box-shadow: inset 3px 0 0 #D9A441; }
+  .pa-card.glow-coral{ box-shadow: inset 3px 0 0 #E2725B; }
+  .pa-card.glow-sky{ box-shadow: inset 3px 0 0 #5FB8D6; }
+  .pa-card.glow-lavender{ box-shadow: inset 3px 0 0 #9B8FC4; }
+  .pa-card h4{ display:flex; align-items:center; gap:9px; font-family:var(--body); font-weight:700; font-size:0.92rem; color:#F3EFF7; margin-bottom:8px; }
+  .pa-card h4 .icon{ width:17px; height:17px; margin:0; }
+  .pa-card p{ font-size:0.88rem; color:#ABA2B8; line-height:1.6; }
+
+  .pa-kv-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .pa-kv{ background:#14111B; border:1px solid #2A2433; border-radius:12px; padding:11px 13px; }
+  .pa-kv .k{ display:block; font-family:var(--mono); font-size:0.62rem; text-transform:uppercase; color:#7D7488; letter-spacing:.04em; margin-bottom:4px; }
+  .pa-kv .v{ font-size:0.85rem; color:#F3EFF7; font-weight:600; }
+
+  .pa-indep{ display:flex; gap:14px; align-items:flex-start; border-radius:18px; padding:18px 20px; margin-bottom:8px;
+    background:linear-gradient(135deg, rgba(168,204,58,0.1), rgba(95,184,214,0.08)); border:1px solid rgba(168,204,58,0.28); }
+  .pa-indep .icon{ width:20px; height:20px; color:#A8CC3A; margin-top:2px; flex-shrink:0; }
+  .pa-indep strong{ display:block; font-family:var(--display); font-size:0.95rem; color:#F3EFF7; margin-bottom:4px; }
+  .pa-indep p{ font-size:0.83rem; color:#ABA2B8; line-height:1.55; }
+
+  .pa-fit-row{ margin-bottom:16px; }
+  .pa-fit-row:last-child{ margin-bottom:0; }
+  .pa-fit-label{ display:flex; justify-content:space-between; align-items:baseline; font-size:0.86rem; margin-bottom:7px; gap:10px; flex-wrap:wrap; }
+  .pa-fit-label .name{ font-weight:700; color:#F3EFF7; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .pa-fit-label .mech{ font-family:var(--mono); font-size:0.66rem; color:#7D7488; font-weight:400; }
+  .pa-fit-label .cur-tag{ font-family:var(--mono); font-size:0.6rem; text-transform:uppercase; background:rgba(155,143,196,0.18); color:#C3B8E8; padding:2px 7px; border-radius:5px; }
+  .pa-fit-val{ font-family:var(--mono); color:#7D7488; font-size:0.8rem; }
+  .pa-fit-track{ height:8px; border-radius:5px; background:#26202E; overflow:hidden; }
+  .pa-fit-fill{ height:100%; border-radius:5px; }
+
+  .pa-suggestion{ border-radius:16px; padding:20px 22px; margin-top:14px; }
+  .pa-suggestion.has{ background:rgba(217,164,65,0.1); border:1px solid rgba(217,164,65,0.32); }
+  .pa-suggestion.no{ background:rgba(168,204,58,0.08); border:1px solid rgba(168,204,58,0.28); }
+  .pa-suggestion strong{ display:block; margin-bottom:6px; font-family:var(--display); font-size:0.98rem; }
+  .pa-suggestion p{ font-size:0.87rem; color:#ABA2B8; line-height:1.6; }
+
+  .pa-actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; }
+  .pa-btn{ display:inline-flex; align-items:center; gap:8px; font-size:0.86rem; font-weight:600; font-family:var(--body); padding:11px 18px; border-radius:12px; border:1px solid transparent; }
+  .pa-btn-primary{ background:#F3EFF7; color:#15121A; }
+  .pa-btn-primary:hover{ background:#fff; }
+  .pa-btn-secondary{ background:transparent; color:#F3EFF7; border-color:#332C40; }
+  .pa-btn-secondary:hover{ border-color:#4A4258; }
+
+  .pa-picker-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .pa-picker-card{ display:block; background:#181420; border:1px solid #2A2433; border-radius:18px; padding:20px; text-align:left; transition:border-color .15s, transform .15s; }
+  .pa-picker-card:hover{ transform:translateY(-2px); border-color:#4A4258; }
+  .pa-picker-card h4{ font-family:var(--mono); font-size:0.85rem; color:#F3EFF7; margin-bottom:8px; }
+  .pa-picker-card p{ font-size:0.8rem; color:#8A8096; margin-bottom:14px; min-height:34px; }
+
+  .pa-tabbar{ position:fixed; bottom:0; left:0; right:0; background:rgba(15,13,20,0.88); backdrop-filter:blur(12px);
+    border-top:1px solid #2A2433; display:flex; justify-content:center; padding:10px 16px; z-index:50; }
+  .pa-tabbar-inner{ display:flex; gap:8px; max-width:720px; width:100%; justify-content:space-around; }
+  .pa-tab{ display:flex; flex-direction:column; align-items:center; gap:4px; font-size:0.66rem; color:#7D7488; font-family:var(--mono); padding:4px 10px; border-radius:10px; }
+  .pa-tab.active{ color:#F3EFF7; }
+  .pa-tab .icon{ width:19px; height:19px; margin:0; }
+
+  @media (max-width:520px){
+    .pa-picker-grid{ grid-template-columns:1fr; }
+    .pa-ring{ width:170px; height:170px; }
+    .pa-ring-num{ font-size:2.2rem; }
   }
-  .indep-banner .icon{ width:22px; height:22px; color:var(--lime); margin-top:2px; }
-  .indep-banner strong{ display:block; margin-bottom:4px; font-family:var(--display); font-size:1rem; }
-  .indep-banner p{ font-size:0.86rem; color:rgba(251,250,252,0.7); max-width:64ch; }
-
-  .friendly-p{ font-size:0.92rem; color:var(--ink-dim); line-height:1.6; }
-
-  .fit-row{ margin-bottom:16px; }
-  .fit-row:last-child{ margin-bottom:0; }
-  .fit-label{ display:flex; justify-content:space-between; align-items:center; font-size:0.86rem; margin-bottom:6px; }
-  .fit-label .name{ font-weight:600; color:var(--ink); display:flex; align-items:center; gap:8px; }
-  .fit-label .mech{ font-family:var(--mono); font-size:0.68rem; color:var(--ink-faint); font-weight:400; }
-  .fit-label .cur-tag{ font-family:var(--mono); font-size:0.64rem; text-transform:uppercase; background:var(--lavender-soft); color:var(--lavender-dim); padding:2px 7px; border-radius:5px; }
-  .fit-track{ height:10px; border-radius:5px; background:var(--taupe-soft); overflow:hidden; }
-  .fit-fill{ height:100%; border-radius:5px; }
-
-  .suggestion-card{ border-radius:16px; padding:22px 24px; margin-top:6px; }
-  .suggestion-card.has-suggestion{ background:var(--amber-soft); border:1px solid rgba(217,164,65,0.4); }
-  .suggestion-card.no-suggestion{ background:var(--lime-soft); border:1px solid rgba(168,204,58,0.4); }
-
-  .picker-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(230px,1fr)); gap:16px; }
-  .picker-card{ background:var(--card); border:1px solid var(--line); border-radius:16px; padding:20px; }
-  .picker-card h4{ font-family:var(--mono); font-size:0.9rem; color:var(--ink); margin-bottom:8px; }
-  .picker-card p{ font-size:0.82rem; color:var(--ink-faint); margin-bottom:14px; min-height:36px; }
 </style>
 </head>
 <body>
@@ -324,6 +384,7 @@
     <div class="content" id="app"></div>
   </div>
 </div>
+<div class="patient-shell" id="patientapp" style="display:none"></div>
 
 <div class="toast" id="toast"></div>
 
@@ -531,28 +592,28 @@ function render(){
   const parts = parseHash();
   const shell = document.getElementById('shell');
   const landing = document.getElementById('landing');
+  const patientapp = document.getElementById('patientapp');
 
-  if(parts[0]!=='research' && parts[0]!=='app'){
-    shell.style.display = 'none';
-    landing.style.display = 'flex';
-    document.body.classList.remove('patient-app');
-    return renderLandingPage();
-  }
-  shell.style.display = 'flex';
+  shell.style.display = 'none';
   landing.style.display = 'none';
+  patientapp.style.display = 'none';
 
   if(parts[0]==='app'){
-    document.body.classList.add('patient-app');
-    renderPatientSidebar(parts);
+    patientapp.style.display = 'block';
     if(parts[1]){ return renderPatientAppDashboard(parts[1]); }
     return renderPatientAppHome();
   }
 
-  document.body.classList.remove('patient-app');
-  renderSidebar(parts);
-  if(parts[1]==='patient' && parts[2]){ return renderPatientPage(parts[2]); }
-  if(parts[1]==='overview'){ return renderOverviewPage(); }
-  return renderRosterPage();
+  if(parts[0]==='research'){
+    shell.style.display = 'flex';
+    renderSidebar(parts);
+    if(parts[1]==='patient' && parts[2]){ return renderPatientPage(parts[2]); }
+    if(parts[1]==='overview'){ return renderOverviewPage(); }
+    return renderRosterPage();
+  }
+
+  landing.style.display = 'flex';
+  return renderLandingPage();
 }
 
 /* ---------------- Sidebar ---------------- */
@@ -966,29 +1027,45 @@ function renderLandingPage(){
   `;
 }
 
-/* ---------------- Patient app: sidebar ---------------- */
-function renderPatientSidebar(parts){
-  const code = parts[1];
-  const html = `
-    <a class="brand" href="#/">
-      <svg class="mark" viewBox="0 0 32 32" fill="none">
-        <circle cx="16" cy="16" r="10.5" stroke="#FBFAFC" stroke-width="2"/>
-        <circle cx="16" cy="16" r="6.5" stroke="#5FB8D6" stroke-width="2"/>
-        <circle cx="16" cy="16" r="2" fill="#A8CC3A"/>
-      </svg>
-      <span>Compass</span>
-    </a>
-    <div class="proto-badge">Prototype · Sample Data</div>
-    <div class="nav-group">
-      <div class="nav-label">Your account</div>
-      <a class="nav-link ${code?'active':''}" href="#/app${code?'/'+code:''}">${icon('users')}My dashboard</a>
-      <a class="nav-link" href="#/app">${icon('search')}Switch demo patient</a>
-    </div>
-    <div class="sidebar-footer">
-      <div class="sidebar-security">${icon('shield')}<span>Independent — not funded or owned by any pharmaceutical company</span></div>
-      <a class="nav-link" href="#/" style="font-size:0.8rem;">${icon('chevron')}Back to home</a>
+/* ---------------- Patient app: shared chrome ---------------- */
+const PA_COLORS = { lime:'#A8CC3A', amber:'#D9A441', coral:'#E2725B', sky:'#5FB8D6', lavender:'#9B8FC4' };
+function paScoreColor(score){ return score>=65 ? PA_COLORS.lime : score>=40 ? PA_COLORS.amber : PA_COLORS.coral; }
+function ringSvg(pct, color, size, stroke){
+  const r = (size - stroke) / 2;
+  const c = 2 * Math.PI * r;
+  const clamped = Math.max(0, Math.min(100, pct));
+  const offset = c * (1 - clamped/100);
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="#26202E" stroke-width="${stroke}"/>
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${color}" stroke-width="${stroke}" stroke-linecap="round" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${offset.toFixed(1)}"/>
+  </svg>`;
+}
+function patientTopbar(){
+  return `
+    <div class="pa-topbar">
+      <a class="pa-brand" href="#/">
+        <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
+          <circle cx="16" cy="16" r="10.5" stroke="#F3EFF7" stroke-width="2"/>
+          <circle cx="16" cy="16" r="6.5" stroke="#5FB8D6" stroke-width="2"/>
+          <circle cx="16" cy="16" r="2" fill="#A8CC3A"/>
+        </svg>
+        <span>Compass</span>
+      </a>
+      <div class="pa-topbar-actions">
+        <span class="pa-badge">Prototype</span>
+        <a class="pa-link" href="#/research">Research console</a>
+      </div>
     </div>`;
-  document.getElementById('sidebar').innerHTML = html;
+}
+function patientTabbar(code){
+  return `
+    <div class="pa-tabbar">
+      <div class="pa-tabbar-inner">
+        <a class="pa-tab ${code?'active':''}" href="#/app${code?'/'+code:''}">${icon('activity')}<span>Dashboard</span></a>
+        <a class="pa-tab ${!code?'active':''}" href="#/app">${icon('search')}<span>Switch patient</span></a>
+        <a class="pa-tab" href="#/">${icon('compass')}<span>Home</span></a>
+      </div>
+    </div>`;
 }
 
 /* ---------------- Patient app: demo patient picker ---------------- */
@@ -1006,34 +1083,32 @@ function pickDemoPatients(){
 }
 
 function renderPatientAppHome(){
-  renderBreadcrumb([{label:'Compass',href:'#/app'}]);
-  const app = document.getElementById('app');
   const demo = pickDemoPatients();
-  app.innerHTML = `
-    <div class="page-head">
-      <div>
-        <span class="eyebrow" style="color:var(--coral-dim)">Compass · Patient app</span>
+  document.getElementById('patientapp').innerHTML = `
+    ${patientTopbar()}
+    <div class="pa-container">
+      <div class="pa-hero">
+        <div class="pa-eyebrow">Compass · Patient app</div>
         <h1>Try the app as one of our pilot patients</h1>
-        <p>This is a clickable demo — pick any sample patient below to see their own dashboard, in their own words.</p>
+        <p>This is a clickable demo — pick any sample patient below to see her own dashboard, in her own words.</p>
+      </div>
+      <div class="pa-picker-grid">
+        ${demo.map(d=>`
+          <a class="pa-picker-card" href="#/app/${d.p.code}">
+            <h4>${d.p.code}</h4>
+            <p>${escapeHtml(d.desc)}</p>
+            <span class="pa-link" style="color:#C3B8E8;">Open dashboard ${icon('chevron')}</span>
+          </a>`).join('')}
       </div>
     </div>
-    <div class="picker-grid">
-      ${demo.map(d=>`
-        <div class="picker-card">
-          <h4>${d.p.code}</h4>
-          <p>${escapeHtml(d.desc)}</p>
-          <a class="btn btn-primary btn-sm" href="#/app/${d.p.code}">Open dashboard ${icon('chevron')}</a>
-        </div>`).join('')}
-    </div>
+    ${patientTabbar(null)}
   `;
 }
 
 /* ---------------- Patient app: personal dashboard ---------------- */
 function renderPatientAppDashboard(code){
   const p = PATIENTS.find(x=>x.code===code);
-  const app = document.getElementById('app');
   if(!p){ location.hash='#/app'; return; }
-  renderBreadcrumb([{label:'Compass',href:'#/app'},{label:code,href:'#'}]);
 
   const opts = treatmentOptions(p);
   const last = p.log[p.log.length-1];
@@ -1059,88 +1134,98 @@ function renderPatientAppDashboard(code){
     ? `Your next dose increase is being paced a little more slowly, based on how you've been feeling.`
     : `You're progressing through your dose schedule as planned.`;
 
-  app.innerHTML = `
-    <div class="patient-hero">
-      <span class="eyebrow">${p.code} · ${p.drug} · Week ${p.week} of 12</span>
-      <h1>Here's how things are going for you</h1>
-      <p>${trendCopy}</p>
-    </div>
+  const overallScore = Math.max(4, 100 - p.overall);
+  const paceScore = Math.max(0, Math.min(100, Math.round((last.weightPct/expected)*100)));
+  const comfortScore = Math.max(0, Math.round(100 - last.nausea*10));
+  const consistencyScore = last.adherence;
+  const scoreLabel = overallScore>=65 ? 'On track' : overallScore>=40 ? 'Worth watching' : 'Needs attention';
 
-    <div class="indep-banner">
-      ${icon('shield')}
-      <div>
-        <strong>Compass is independent</strong>
-        <p>We're not paid by any pharmaceutical company, and we don't sell any drug. Our only job is to help you get the best outcome — even when that means suggesting a change, or telling you your current plan looks right as it is.</p>
+  document.getElementById('patientapp').innerHTML = `
+    ${patientTopbar()}
+    <div class="pa-container">
+      <div class="pa-hero">
+        <div class="pa-eyebrow">${p.code} · ${p.drug} · Week ${p.week} of 12</div>
+        <h1>Here's how things are going for you</h1>
       </div>
-    </div>
 
-    <div class="pid-grid">
-      <div class="pid-card">
-        <h3>${icon('activity')} How you're doing</h3>
-        ${dualLineChart(p.log.map(l=>l.weightPct), EXPECTED_CURVE.slice(0,p.week), 'var(--lavender-dim)')}
-        <div class="chart-legend">
-          <div class="item"><span class="sw" style="background:var(--lavender-dim)"></span>You</div>
-          <div class="item"><span class="sw dashed"></span>Typical pace</div>
-        </div>
-        <p class="friendly-p" style="margin-top:14px;">${trendCopy}</p>
-      </div>
-      <div class="pid-card">
-        <h3>${icon('droplet')} Your side effects</h3>
-        ${barChart(p.log.map(l=>l.nausea))}
-        <p class="friendly-p" style="margin-top:14px;">${nauseaCopy}</p>
-      </div>
-    </div>
-
-    <div class="pid-grid">
-      <div class="pid-card">
-        <h3>${icon('history')} About you</h3>
-        <div class="kv-grid">
-          <div class="kv"><span class="k">Menopausal status</span><span class="v">${p.menopausalStatus}</span></div>
-          <div class="kv"><span class="k">Hormonal contraception</span><span class="v">${p.contraception}</span></div>
-          <div class="kv"><span class="k">HRT</span><span class="v">${p.onHRT ? 'Currently on HRT' : 'Not on HRT'}</span></div>
-          <div class="kv"><span class="k">Other medications</span><span class="v">${p.otherMeds.length ? p.otherMeds.join(', ') : 'None reported'}</span></div>
-        </div>
-        ${p.statusChangeNote ? `<p class="friendly-p" style="margin-top:14px;color:var(--lavender-dim);">${icon('alert')} ${escapeHtml(p.statusChangeNote)} We factor this into your pace below.</p>` : ''}
-      </div>
-      <div class="pid-card">
-        <h3>${icon('steps')} Your dose pace</h3>
-        <div class="kv-grid">
-          <div class="kv"><span class="k">Current dose</span><span class="v">${p.doseSchedule[p.doseIdx]}</span></div>
-          <div class="kv"><span class="k">Step</span><span class="v">${p.doseIdx+1} of ${p.doseSchedule.length}</span></div>
-        </div>
-        <div class="week-track" style="margin-top:14px;">
-          <div class="week-bar" style="width:100%;"><div class="week-fill" style="width:${(p.doseIdx+1)/p.doseSchedule.length*100}%"></div></div>
-        </div>
-        <p class="friendly-p" style="margin-top:14px;">${doseCopy}</p>
-      </div>
-    </div>
-
-    <div class="pid-card" style="padding:22px 24px;">
-      <h3>${icon('compass')} Your options</h3>
-      <p class="friendly-p" style="margin-bottom:16px;">${p.drug} isn't the only GLP-1 option available. Here's how your genetics and how you've responded so far line up against every option we track — not just the one you're on.</p>
-      ${opts.fits.map(f=>`
-        <div class="fit-row">
-          <div class="fit-label">
-            <span class="name">${f.drug} <span class="mech">${f.mechanism}</span> ${f.current?'<span class="cur-tag">Your current</span>':''}</span>
-            <span class="val" style="font-family:var(--mono);color:var(--ink-faint);">${f.fit}/100</span>
+      <div class="pa-ring-wrap">
+        <div class="pa-ring">
+          ${ringSvg(overallScore, paScoreColor(overallScore), 200, 14)}
+          <div class="pa-ring-center">
+            <div class="pa-ring-num">${overallScore}</div>
+            <div class="pa-ring-lbl">${scoreLabel}</div>
           </div>
-          <div class="fit-track"><div class="fit-fill" style="width:${f.fit}%;background:${f.fit>=60?'var(--lime)':f.fit>=35?'var(--amber)':'var(--coral)'}"></div></div>
-        </div>`).join('')}
-
-      <div class="suggestion-card ${opts.meaningfullyBetter?'has-suggestion':'no-suggestion'}">
-        ${opts.meaningfullyBetter ? `
-          <strong style="display:block;margin-bottom:6px;color:var(--amber-dim);">Worth raising with your prescriber</strong>
-          <p class="friendly-p">Based on your genetic profile and how you've responded so far, some patients like you see better tolerability on <strong>${opts.bestAlt.drug}</strong> (${opts.bestAlt.mechanism}). We're not making this switch for you — it's simply something worth a conversation at your next appointment.</p>
-        ` : `
-          <strong style="display:block;margin-bottom:6px;color:var(--lime-dim);">Your current treatment looks well matched</strong>
-          <p class="friendly-p">Given your profile and how things have gone so far, we don't see a reason to recommend a change right now. We'll keep watching and tell you if that changes.</p>
-        `}
+        </div>
       </div>
-      <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;">
-        <button class="btn btn-primary btn-sm" onclick="toast('Summary saved — bring it to your next appointment.')">Save summary for my appointment</button>
-        <button class="btn btn-secondary btn-sm" onclick="toast('A member of the team will follow up with you.')">Ask a question</button>
+
+      <div class="pa-mini-row">
+        <div class="pa-mini">
+          <div class="pa-mini-ring">${ringSvg(paceScore, paScoreColor(paceScore), 64, 7)}<div class="pa-mini-num">${paceScore}</div></div>
+          <div class="pa-mini-lbl">Pace</div>
+        </div>
+        <div class="pa-mini">
+          <div class="pa-mini-ring">${ringSvg(comfortScore, paScoreColor(comfortScore), 64, 7)}<div class="pa-mini-num">${comfortScore}</div></div>
+          <div class="pa-mini-lbl">Comfort</div>
+        </div>
+        <div class="pa-mini">
+          <div class="pa-mini-ring">${ringSvg(consistencyScore, paScoreColor(consistencyScore), 64, 7)}<div class="pa-mini-num">${consistencyScore}</div></div>
+          <div class="pa-mini-lbl">Consistency</div>
+        </div>
+      </div>
+
+      <div class="pa-indep">
+        ${icon('shield')}
+        <div>
+          <strong>Compass is independent</strong>
+          <p>We're not paid by any pharmaceutical company, and we don't sell any drug. Our only job is to help you get the best outcome — even when that means suggesting a change, or telling you your current plan looks right as it is.</p>
+        </div>
+      </div>
+
+      <div class="pa-section-title">Your insights</div>
+      <div class="pa-card glow-lavender"><h4>${icon('activity')} How you're doing</h4><p>${trendCopy}</p></div>
+      <div class="pa-card glow-amber"><h4>${icon('droplet')} Your side effects</h4><p>${nauseaCopy}</p></div>
+      <div class="pa-card glow-sky"><h4>${icon('steps')} Your dose pace</h4><p>${doseCopy}</p></div>
+      ${p.statusChangeNote ? `<div class="pa-card glow-lavender"><h4>${icon('alert')} Status update</h4><p>${escapeHtml(p.statusChangeNote)} We factor this into your pace.</p></div>` : ''}
+
+      <div class="pa-section-title">About you</div>
+      <div class="pa-card">
+        <div class="pa-kv-grid">
+          <div class="pa-kv"><span class="k">Menopausal status</span><span class="v">${p.menopausalStatus}</span></div>
+          <div class="pa-kv"><span class="k">Contraception</span><span class="v">${p.contraception}</span></div>
+          <div class="pa-kv"><span class="k">HRT</span><span class="v">${p.onHRT ? 'Currently on HRT' : 'Not on HRT'}</span></div>
+          <div class="pa-kv"><span class="k">Other medications</span><span class="v">${p.otherMeds.length ? p.otherMeds.join(', ') : 'None reported'}</span></div>
+        </div>
+      </div>
+
+      <div class="pa-section-title">Your options</div>
+      <div class="pa-card">
+        <p style="font-size:0.88rem;color:#ABA2B8;margin-bottom:18px;">${p.drug} isn't the only GLP-1 option available. Here's how your genetics and how you've responded so far line up against every option we track — not just the one you're on.</p>
+        ${opts.fits.map(f=>`
+          <div class="pa-fit-row">
+            <div class="pa-fit-label">
+              <span class="name">${f.drug} <span class="mech">${f.mechanism}</span> ${f.current?'<span class="cur-tag">Your current</span>':''}</span>
+              <span class="pa-fit-val">${f.fit}/100</span>
+            </div>
+            <div class="pa-fit-track"><div class="pa-fit-fill" style="width:${f.fit}%;background:${paScoreColor(f.fit)}"></div></div>
+          </div>`).join('')}
+
+        <div class="pa-suggestion ${opts.meaningfullyBetter?'has':'no'}">
+          ${opts.meaningfullyBetter ? `
+            <strong style="color:${PA_COLORS.amber}">Worth raising with your prescriber</strong>
+            <p>Based on your genetic profile and how you've responded so far, some patients like you see better tolerability on <strong style="color:#F3EFF7">${opts.bestAlt.drug}</strong> (${opts.bestAlt.mechanism}). We're not making this switch for you — it's simply something worth a conversation at your next appointment.</p>
+          ` : `
+            <strong style="color:${PA_COLORS.lime}">Your current treatment looks well matched</strong>
+            <p>Given your profile and how things have gone so far, we don't see a reason to recommend a change right now. We'll keep watching and tell you if that changes.</p>
+          `}
+        </div>
+
+        <div class="pa-actions">
+          <button class="pa-btn pa-btn-primary" onclick="toast('Summary saved — bring it to your next appointment.')">Save summary for my appointment</button>
+          <button class="pa-btn pa-btn-secondary" onclick="toast('A member of the team will follow up with you.')">Ask a question</button>
+        </div>
       </div>
     </div>
+    ${patientTabbar(code)}
   `;
 }
 </script>
