@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Compass Health — Clinic Monitor</title>
+<title>Compass Health</title>
 <meta name="robots" content="noindex, nofollow">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -252,11 +252,70 @@
   @media (max-width:480px){
     .kpi-row{ grid-template-columns:1fr; }
   }
+
+  /* ---------- Landing / chooser ---------- */
+  .landing{ min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:40px 20px; background:var(--ink); }
+  .landing-brand{ display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+  .landing-brand .mark{ width:36px; height:36px; }
+  .landing-brand span{ font-family:var(--display); font-weight:700; font-size:1.5rem; color:var(--white); }
+  .landing-tag{ color:rgba(251,250,252,0.55); font-size:0.96rem; margin-bottom:44px; text-align:center; max-width:44ch; }
+  .landing-choices{ display:grid; grid-template-columns:1fr 1fr; gap:22px; width:100%; max-width:780px; }
+  .landing-card{
+    background:var(--card); border-radius:20px; padding:30px 26px; text-align:left;
+    border:1px solid transparent; transition:border-color .15s, transform .15s;
+  }
+  .landing-card:hover{ transform:translateY(-2px); }
+  .landing-card .lc-icon{ width:46px; height:46px; border-radius:13px; display:flex; align-items:center; justify-content:center; margin-bottom:16px; }
+  .landing-card .lc-icon .icon{ width:22px; height:22px; margin:0; }
+  .landing-card h2{ font-size:1.2rem; margin-bottom:8px; }
+  .landing-card p{ font-size:0.86rem; color:var(--ink-faint); margin-bottom:16px; }
+  .landing-card.for-research{ border-color:rgba(155,143,196,0.4); }
+  .landing-card.for-research:hover{ border-color:var(--lavender); }
+  .landing-card.for-patient{ border-color:rgba(226,114,91,0.4); }
+  .landing-card.for-patient:hover{ border-color:var(--coral); }
+  .landing-card .lc-cta{ font-family:var(--mono); font-size:0.78rem; font-weight:600; display:flex; align-items:center; gap:4px; }
+  @media (max-width:600px){ .landing-choices{ grid-template-columns:1fr; } }
+
+  /* ---------- Patient app ---------- */
+  .patient-app .sidebar{ background:linear-gradient(180deg, #2A2233, var(--ink)); }
+  .patient-hero{ background:linear-gradient(135deg, var(--lavender-soft), var(--sky-soft)); border-radius:20px; padding:28px 30px; margin-bottom:24px; }
+  .patient-hero .eyebrow{ color:var(--coral-dim); }
+  .patient-hero h1{ font-size:1.5rem; margin-bottom:8px; }
+  .patient-hero p{ color:var(--ink-dim); font-size:0.94rem; max-width:60ch; }
+
+  .indep-banner{
+    display:flex; gap:14px; align-items:flex-start; background:var(--ink); color:var(--white);
+    border-radius:16px; padding:18px 22px; margin-bottom:24px;
+  }
+  .indep-banner .icon{ width:22px; height:22px; color:var(--lime); margin-top:2px; }
+  .indep-banner strong{ display:block; margin-bottom:4px; font-family:var(--display); font-size:1rem; }
+  .indep-banner p{ font-size:0.86rem; color:rgba(251,250,252,0.7); max-width:64ch; }
+
+  .friendly-p{ font-size:0.92rem; color:var(--ink-dim); line-height:1.6; }
+
+  .fit-row{ margin-bottom:16px; }
+  .fit-row:last-child{ margin-bottom:0; }
+  .fit-label{ display:flex; justify-content:space-between; align-items:center; font-size:0.86rem; margin-bottom:6px; }
+  .fit-label .name{ font-weight:600; color:var(--ink); display:flex; align-items:center; gap:8px; }
+  .fit-label .mech{ font-family:var(--mono); font-size:0.68rem; color:var(--ink-faint); font-weight:400; }
+  .fit-label .cur-tag{ font-family:var(--mono); font-size:0.64rem; text-transform:uppercase; background:var(--lavender-soft); color:var(--lavender-dim); padding:2px 7px; border-radius:5px; }
+  .fit-track{ height:10px; border-radius:5px; background:var(--taupe-soft); overflow:hidden; }
+  .fit-fill{ height:100%; border-radius:5px; }
+
+  .suggestion-card{ border-radius:16px; padding:22px 24px; margin-top:6px; }
+  .suggestion-card.has-suggestion{ background:var(--amber-soft); border:1px solid rgba(217,164,65,0.4); }
+  .suggestion-card.no-suggestion{ background:var(--lime-soft); border:1px solid rgba(168,204,58,0.4); }
+
+  .picker-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(230px,1fr)); gap:16px; }
+  .picker-card{ background:var(--card); border:1px solid var(--line); border-radius:16px; padding:20px; }
+  .picker-card h4{ font-family:var(--mono); font-size:0.9rem; color:var(--ink); margin-bottom:8px; }
+  .picker-card p{ font-size:0.82rem; color:var(--ink-faint); margin-bottom:14px; min-height:36px; }
 </style>
 </head>
 <body>
 
-<div class="shell" id="shell">
+<div class="landing" id="landing" style="display:none"></div>
+<div class="shell" id="shell" style="display:none">
   <aside class="sidebar" id="sidebar"></aside>
   <div class="main">
     <div class="topbar">
@@ -283,6 +342,12 @@ const DOSE_SCHEDULES = {
   Liraglutide:  ['0.6mg','1.2mg','1.8mg','2.4mg','3mg'],
   Orforglipron: ['3mg','6mg','12mg','24mg','36mg'],
 };
+const DRUG_MECHANISM = {
+  Semaglutide:  'GLP-1 receptor agonist',
+  Liraglutide:  'GLP-1 receptor agonist',
+  Orforglipron: 'GLP-1 receptor agonist (oral)',
+  Tirzepatide:  'Dual GLP-1/GIP receptor agonist',
+};
 const CONTRACEPTION_OPTIONS = ['Combined pill','Progestogen-only pill','Hormonal IUD','None'];
 const OTHER_MEDS_POOL = ['Levothyroxine (hypothyroidism)','Sertraline (SSRI)','Metformin','Atorvastatin','Vitamin D + calcium'];
 
@@ -308,6 +373,8 @@ const ICON_PATHS = {
   history:   '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3.5A1.5 1.5 0 0 1 10.5 2h3A1.5 1.5 0 0 1 15 3.5V4"/><path d="M8.2 10.5h7.6M8.2 14h7.6M8.2 17.5h5"/>',
   capsule:   '<path d="M6.5 17.5a5 5 0 0 1 0-7.07l4.93-4.93a5 5 0 0 1 7.07 7.07l-4.93 4.93a5 5 0 0 1-7.07 0Z"/><path d="M9.5 8.5l6 6"/>',
   steps:     '<path d="M4 20h4v-4h4v-4h4v-4h4V4"/>',
+  shield:    '<path d="M12 3l7 3v6c0 5-3.5 8-7 9-3.5-1-7-4-7-9V6l7-3Z"/><path d="M9 12l2 2 4-4"/>',
+  compass:   '<circle cx="12" cy="12" r="9"/><path d="M14.8 9.2l-2.3 5.9-5.9 2.3 2.3-5.9 5.9-2.3Z"/>',
 };
 function icon(name){
   return `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${ICON_PATHS[name]||''}</svg>`;
@@ -417,6 +484,32 @@ function buildPatients(){
 
 const PATIENTS = buildPatients();
 
+/* ---------------- Treatment-fit estimation (patient app) ----------------
+   Independent of any single drug: scores every option against this
+   patient's genetics + observed response, so the app can surface a
+   different option when it looks like a better fit — not just track
+   adherence to whatever they're already on. */
+function estimateFit(p, drug){
+  const isDual = drug === 'Tirzepatide';
+  let score = isDual
+    ? (p.glp1rFavorable?68:34)*0.5 + (p.giprFavorable?68:34)*0.5
+    : (p.glp1rFavorable?68:34);
+  if(drug === p.drug){
+    if(p.profile==='good') score += 16;
+    else if(p.profile==='poor') score -= 22;
+    else score -= 6;
+  }
+  return Math.max(8, Math.min(95, Math.round(score)));
+}
+function treatmentOptions(p){
+  const fits = DRUGS.map(d => ({ drug:d, mechanism:DRUG_MECHANISM[d], fit:estimateFit(p,d), current:d===p.drug }));
+  fits.sort((a,b)=>b.fit-a.fit);
+  const current = fits.find(f=>f.current);
+  const bestAlt = fits.find(f=>!f.current);
+  const meaningfullyBetter = p.profile!=='good' && bestAlt.fit - current.fit >= 18;
+  return { fits, current, bestAlt, meaningfullyBetter };
+}
+
 window.addEventListener('hashchange', render);
 window.addEventListener('DOMContentLoaded', render);
 
@@ -436,9 +529,29 @@ function parseHash(){
 }
 function render(){
   const parts = parseHash();
+  const shell = document.getElementById('shell');
+  const landing = document.getElementById('landing');
+
+  if(parts[0]!=='research' && parts[0]!=='app'){
+    shell.style.display = 'none';
+    landing.style.display = 'flex';
+    document.body.classList.remove('patient-app');
+    return renderLandingPage();
+  }
+  shell.style.display = 'flex';
+  landing.style.display = 'none';
+
+  if(parts[0]==='app'){
+    document.body.classList.add('patient-app');
+    renderPatientSidebar(parts);
+    if(parts[1]){ return renderPatientAppDashboard(parts[1]); }
+    return renderPatientAppHome();
+  }
+
+  document.body.classList.remove('patient-app');
   renderSidebar(parts);
-  if(parts[0]==='patient' && parts[1]){ return renderPatientPage(parts[1]); }
-  if(parts[0]==='overview'){ return renderOverviewPage(); }
+  if(parts[1]==='patient' && parts[2]){ return renderPatientPage(parts[2]); }
+  if(parts[1]==='overview'){ return renderOverviewPage(); }
   return renderRosterPage();
 }
 
@@ -451,16 +564,17 @@ function renderSidebar(parts){
         <circle cx="16" cy="16" r="6.5" stroke="#5FB8D6" stroke-width="2"/>
         <circle cx="16" cy="16" r="2" fill="#A8CC3A"/>
       </svg>
-      <span>Compass Health</span>
+      <span>Compass Research</span>
     </a>
     <div class="proto-badge">Prototype · Sample Data</div>
     <div class="nav-group">
       <div class="nav-label">${escapeHtml(CLINIC_NAME)}</div>
-      <a class="nav-link ${parts[0]!=='overview'?'active':''}" href="#/">${icon('users')}Patient Roster</a>
-      <a class="nav-link ${parts[0]==='overview'?'active':''}" href="#/overview">${icon('activity')}Cohort Overview</a>
+      <a class="nav-link ${parts[1]!=='overview'?'active':''}" href="#/research">${icon('users')}Patient Roster</a>
+      <a class="nav-link ${parts[1]==='overview'?'active':''}" href="#/research/overview">${icon('activity')}Cohort Overview</a>
     </div>
     <div class="sidebar-footer">
       <div class="sidebar-security">${icon('lock')}<span>Built for UK MDR &amp; EU IVDR-aligned data handling</span></div>
+      <a class="nav-link" href="#/" style="font-size:0.8rem;">${icon('chevron')}Back to home</a>
     </div>`;
   document.getElementById('sidebar').innerHTML = html;
 }
@@ -493,7 +607,7 @@ function symptomChip(patient){
 
 /* ---------------- Patient Roster ---------------- */
 function renderRosterPage(){
-  renderBreadcrumb([{label:'Patient Roster', href:'#/'}]);
+  renderBreadcrumb([{label:'Patient Roster', href:'#/research'}]);
   const app = document.getElementById('app');
 
   const total = PATIENTS.length;
@@ -572,7 +686,7 @@ function renderRosterPage(){
       return a.code.localeCompare(b.code, undefined, {numeric:true});
     });
     document.getElementById('p-tbody').innerHTML = rows.map(p=>`
-      <tr onclick="location.hash='#/patient/${p.code}'">
+      <tr onclick="location.hash='#/research/patient/${p.code}'">
         <td class="code-cell">${p.code}</td>
         <td><div class="week-track"><div class="week-bar"><div class="week-fill" style="width:${p.week/12*100}%"></div></div><span class="week-lbl">${p.week}/12</span></div></td>
         <td>${p.drug}</td>
@@ -593,8 +707,8 @@ function renderRosterPage(){
 function renderPatientPage(code){
   const p = PATIENTS.find(x=>x.code===code);
   const app = document.getElementById('app');
-  if(!p){ location.hash=''; return; }
-  renderBreadcrumb([{label:'Patient Roster',href:'#/'},{label:code,href:'#'}]);
+  if(!p){ location.hash='#/research'; return; }
+  renderBreadcrumb([{label:'Patient Roster',href:'#/research'},{label:code,href:'#'}]);
 
   const genoInterp = (p.glp1rFavorable && p.giprFavorable) ? 'Favorable variant profile for GLP-1 response'
     : (!p.glp1rFavorable && !p.giprFavorable) ? 'Higher-risk variant profile — reduced efficacy and elevated nausea risk'
@@ -742,7 +856,7 @@ function barChart(values){
 
 /* ---------------- Cohort Overview ---------------- */
 function renderOverviewPage(){
-  renderBreadcrumb([{label:'Patient Roster',href:'#/'},{label:'Cohort Overview',href:'#'}]);
+  renderBreadcrumb([{label:'Patient Roster',href:'#/research'},{label:'Cohort Overview',href:'#'}]);
   const app = document.getElementById('app');
 
   const total = PATIENTS.length;
@@ -819,6 +933,213 @@ function renderOverviewPage(){
     <div class="card" style="padding:26px 28px;">
       <h3 style="margin-bottom:8px;">Retention</h3>
       <p style="font-size:0.9rem;color:var(--ink-dim);">${retentionPct}% of patients past week 8 are still on-track or in active management, rather than silently lapsing.</p>
+    </div>
+  `;
+}
+
+/* ---------------- Landing / chooser ---------------- */
+function renderLandingPage(){
+  document.getElementById('landing').innerHTML = `
+    <div class="landing-brand">
+      <svg class="mark" viewBox="0 0 32 32" fill="none">
+        <circle cx="16" cy="16" r="10.5" stroke="#FBFAFC" stroke-width="2"/>
+        <circle cx="16" cy="16" r="6.5" stroke="#5FB8D6" stroke-width="2"/>
+        <circle cx="16" cy="16" r="2" fill="#A8CC3A"/>
+      </svg>
+      <span>Compass Health</span>
+    </div>
+    <p class="landing-tag">Two views of the same GLP-1 pilot: the research engine that learns from every patient, and the app that turns that learning into independent, personal guidance.</p>
+    <div class="landing-choices">
+      <a class="landing-card for-research" href="#/research">
+        <div class="lc-icon" style="background:var(--lavender-soft);color:var(--lavender-dim)">${icon('activity')}</div>
+        <h2>Research Console</h2>
+        <p>For the clinical &amp; research team. Roster, cohort analytics, and early-warning signal across every patient in the pilot.</p>
+        <div class="lc-cta" style="color:var(--lavender-dim)">Open console ${icon('chevron')}</div>
+      </a>
+      <a class="landing-card for-patient" href="#/app">
+        <div class="lc-icon" style="background:var(--coral-soft);color:var(--coral-dim)">${icon('compass')}</div>
+        <h2>Compass, for you</h2>
+        <p>For patients. Your own trajectory, plain-language insight, and honest guidance on your options — independent of any drug maker.</p>
+        <div class="lc-cta" style="color:var(--coral-dim)">Open app ${icon('chevron')}</div>
+      </a>
+    </div>
+  `;
+}
+
+/* ---------------- Patient app: sidebar ---------------- */
+function renderPatientSidebar(parts){
+  const code = parts[1];
+  const html = `
+    <a class="brand" href="#/">
+      <svg class="mark" viewBox="0 0 32 32" fill="none">
+        <circle cx="16" cy="16" r="10.5" stroke="#FBFAFC" stroke-width="2"/>
+        <circle cx="16" cy="16" r="6.5" stroke="#5FB8D6" stroke-width="2"/>
+        <circle cx="16" cy="16" r="2" fill="#A8CC3A"/>
+      </svg>
+      <span>Compass</span>
+    </a>
+    <div class="proto-badge">Prototype · Sample Data</div>
+    <div class="nav-group">
+      <div class="nav-label">Your account</div>
+      <a class="nav-link ${code?'active':''}" href="#/app${code?'/'+code:''}">${icon('users')}My dashboard</a>
+      <a class="nav-link" href="#/app">${icon('search')}Switch demo patient</a>
+    </div>
+    <div class="sidebar-footer">
+      <div class="sidebar-security">${icon('shield')}<span>Independent — not funded or owned by any pharmaceutical company</span></div>
+      <a class="nav-link" href="#/" style="font-size:0.8rem;">${icon('chevron')}Back to home</a>
+    </div>`;
+  document.getElementById('sidebar').innerHTML = html;
+}
+
+/* ---------------- Patient app: demo patient picker ---------------- */
+function pickDemoPatients(){
+  const good = PATIENTS.find(p=>p.profile==='good' && p.week>=6);
+  const switchCase = PATIENTS.find(p=>treatmentOptions(p).meaningfullyBetter);
+  const hormonal = PATIENTS.find(p=>p.statusChangeNote);
+  const steady = PATIENTS.find(p=>p.profile==='mixed' && !treatmentOptions(p).meaningfullyBetter && p!==good && p!==switchCase && p!==hormonal);
+  return [
+    { p:good, label:'Responding well', desc:'Ahead of the expected curve with mild side effects.' },
+    { p:switchCase, label:'Considering a different option', desc:'Struggling with side effects — the app has a suggestion.' },
+    { p:hormonal, label:'Hormonal status changed mid-treatment', desc:'A shift in menopausal status is affecting her plan.' },
+    { p:steady, label:'Steady, mixed progress', desc:'On track overall, worth keeping an eye on.' },
+  ].filter(x=>x.p);
+}
+
+function renderPatientAppHome(){
+  renderBreadcrumb([{label:'Compass',href:'#/app'}]);
+  const app = document.getElementById('app');
+  const demo = pickDemoPatients();
+  app.innerHTML = `
+    <div class="page-head">
+      <div>
+        <span class="eyebrow" style="color:var(--coral-dim)">Compass · Patient app</span>
+        <h1>Try the app as one of our pilot patients</h1>
+        <p>This is a clickable demo — pick any sample patient below to see their own dashboard, in their own words.</p>
+      </div>
+    </div>
+    <div class="picker-grid">
+      ${demo.map(d=>`
+        <div class="picker-card">
+          <h4>${d.p.code}</h4>
+          <p>${escapeHtml(d.desc)}</p>
+          <a class="btn btn-primary btn-sm" href="#/app/${d.p.code}">Open dashboard ${icon('chevron')}</a>
+        </div>`).join('')}
+    </div>
+  `;
+}
+
+/* ---------------- Patient app: personal dashboard ---------------- */
+function renderPatientAppDashboard(code){
+  const p = PATIENTS.find(x=>x.code===code);
+  const app = document.getElementById('app');
+  if(!p){ location.hash='#/app'; return; }
+  renderBreadcrumb([{label:'Compass',href:'#/app'},{label:code,href:'#'}]);
+
+  const opts = treatmentOptions(p);
+  const last = p.log[p.log.length-1];
+  const expected = EXPECTED_CURVE[Math.min(p.week,12)];
+  const aheadOfCurve = last.weightPct - expected < -1.2;
+  const behindCurve = last.weightPct - expected > 1.5;
+
+  const trendCopy = aheadOfCurve
+    ? `You're ahead of where most people are at week ${p.week} — nice progress.`
+    : behindCurve
+    ? `Your progress has been a bit slower than typical for week ${p.week}. That's common, and it doesn't mean anything is wrong.`
+    : `You're tracking close to what's expected at week ${p.week}.`;
+
+  const nauseaCopy = last.nausea >= 6
+    ? `You've reported more nausea recently. This is one of the most common reasons people struggle in the first few months, and it's exactly what your options below take into account.`
+    : last.nausea >= 3
+    ? `You've had some mild nausea, which is common in the first weeks and usually settles as your body adjusts.`
+    : `You've reported very little nausea so far.`;
+
+  const doseCopy = p.riskLevel==='high'
+    ? `Your care team is holding your dose steady for now, rather than increasing it, until your side effects settle.`
+    : p.riskLevel==='watch'
+    ? `Your next dose increase is being paced a little more slowly, based on how you've been feeling.`
+    : `You're progressing through your dose schedule as planned.`;
+
+  app.innerHTML = `
+    <div class="patient-hero">
+      <span class="eyebrow">${p.code} · ${p.drug} · Week ${p.week} of 12</span>
+      <h1>Here's how things are going for you</h1>
+      <p>${trendCopy}</p>
+    </div>
+
+    <div class="indep-banner">
+      ${icon('shield')}
+      <div>
+        <strong>Compass is independent</strong>
+        <p>We're not paid by any pharmaceutical company, and we don't sell any drug. Our only job is to help you get the best outcome — even when that means suggesting a change, or telling you your current plan looks right as it is.</p>
+      </div>
+    </div>
+
+    <div class="pid-grid">
+      <div class="pid-card">
+        <h3>${icon('activity')} How you're doing</h3>
+        ${dualLineChart(p.log.map(l=>l.weightPct), EXPECTED_CURVE.slice(0,p.week), 'var(--lavender-dim)')}
+        <div class="chart-legend">
+          <div class="item"><span class="sw" style="background:var(--lavender-dim)"></span>You</div>
+          <div class="item"><span class="sw dashed"></span>Typical pace</div>
+        </div>
+        <p class="friendly-p" style="margin-top:14px;">${trendCopy}</p>
+      </div>
+      <div class="pid-card">
+        <h3>${icon('droplet')} Your side effects</h3>
+        ${barChart(p.log.map(l=>l.nausea))}
+        <p class="friendly-p" style="margin-top:14px;">${nauseaCopy}</p>
+      </div>
+    </div>
+
+    <div class="pid-grid">
+      <div class="pid-card">
+        <h3>${icon('history')} About you</h3>
+        <div class="kv-grid">
+          <div class="kv"><span class="k">Menopausal status</span><span class="v">${p.menopausalStatus}</span></div>
+          <div class="kv"><span class="k">Hormonal contraception</span><span class="v">${p.contraception}</span></div>
+          <div class="kv"><span class="k">HRT</span><span class="v">${p.onHRT ? 'Currently on HRT' : 'Not on HRT'}</span></div>
+          <div class="kv"><span class="k">Other medications</span><span class="v">${p.otherMeds.length ? p.otherMeds.join(', ') : 'None reported'}</span></div>
+        </div>
+        ${p.statusChangeNote ? `<p class="friendly-p" style="margin-top:14px;color:var(--lavender-dim);">${icon('alert')} ${escapeHtml(p.statusChangeNote)} We factor this into your pace below.</p>` : ''}
+      </div>
+      <div class="pid-card">
+        <h3>${icon('steps')} Your dose pace</h3>
+        <div class="kv-grid">
+          <div class="kv"><span class="k">Current dose</span><span class="v">${p.doseSchedule[p.doseIdx]}</span></div>
+          <div class="kv"><span class="k">Step</span><span class="v">${p.doseIdx+1} of ${p.doseSchedule.length}</span></div>
+        </div>
+        <div class="week-track" style="margin-top:14px;">
+          <div class="week-bar" style="width:100%;"><div class="week-fill" style="width:${(p.doseIdx+1)/p.doseSchedule.length*100}%"></div></div>
+        </div>
+        <p class="friendly-p" style="margin-top:14px;">${doseCopy}</p>
+      </div>
+    </div>
+
+    <div class="pid-card" style="padding:22px 24px;">
+      <h3>${icon('compass')} Your options</h3>
+      <p class="friendly-p" style="margin-bottom:16px;">${p.drug} isn't the only GLP-1 option available. Here's how your genetics and how you've responded so far line up against every option we track — not just the one you're on.</p>
+      ${opts.fits.map(f=>`
+        <div class="fit-row">
+          <div class="fit-label">
+            <span class="name">${f.drug} <span class="mech">${f.mechanism}</span> ${f.current?'<span class="cur-tag">Your current</span>':''}</span>
+            <span class="val" style="font-family:var(--mono);color:var(--ink-faint);">${f.fit}/100</span>
+          </div>
+          <div class="fit-track"><div class="fit-fill" style="width:${f.fit}%;background:${f.fit>=60?'var(--lime)':f.fit>=35?'var(--amber)':'var(--coral)'}"></div></div>
+        </div>`).join('')}
+
+      <div class="suggestion-card ${opts.meaningfullyBetter?'has-suggestion':'no-suggestion'}">
+        ${opts.meaningfullyBetter ? `
+          <strong style="display:block;margin-bottom:6px;color:var(--amber-dim);">Worth raising with your prescriber</strong>
+          <p class="friendly-p">Based on your genetic profile and how you've responded so far, some patients like you see better tolerability on <strong>${opts.bestAlt.drug}</strong> (${opts.bestAlt.mechanism}). We're not making this switch for you — it's simply something worth a conversation at your next appointment.</p>
+        ` : `
+          <strong style="display:block;margin-bottom:6px;color:var(--lime-dim);">Your current treatment looks well matched</strong>
+          <p class="friendly-p">Given your profile and how things have gone so far, we don't see a reason to recommend a change right now. We'll keep watching and tell you if that changes.</p>
+        `}
+      </div>
+      <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn btn-primary btn-sm" onclick="toast('Summary saved — bring it to your next appointment.')">Save summary for my appointment</button>
+        <button class="btn btn-secondary btn-sm" onclick="toast('A member of the team will follow up with you.')">Ask a question</button>
+      </div>
     </div>
   `;
 }
